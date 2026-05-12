@@ -31,24 +31,35 @@ const formatDate = (iso: string): string => {
 
 <Layout title="Admin · Pedidos">
   <header class="sticky top-0 z-30 border-b border-border bg-background/85 backdrop-blur">
-    <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
-      <div class="flex items-center gap-3">
-        <a href="/" class="text-sm text-muted transition hover:text-accent">
-          ← Volver al catálogo
+    <div class="mx-auto flex max-w-7xl items-center justify-between gap-2 px-4 py-4 sm:gap-4 sm:px-6 lg:px-8">
+      <div class="flex min-w-0 items-center gap-3">
+        <a href="/" class="flex items-center text-sm text-muted transition hover:text-accent" aria-label="Volver al catálogo" title="Volver">
+          <span aria-hidden="true">←</span>
+          <span class="ml-1 hidden sm:inline">Volver al catálogo</span>
         </a>
         <span class="hidden text-border sm:inline">·</span>
-        <h1 class="hidden font-display text-xl font-bold text-ink sm:block">
+        <h1 class="truncate font-display text-lg font-bold text-ink sm:text-xl">
           Pedidos
         </h1>
       </div>
-      <div class="flex items-center gap-3">
+      <div class="flex items-center gap-2 sm:gap-3">
         <ThemeToggle />
-        <span class="hidden text-xs text-muted sm:inline">
+        <span class="hidden text-xs text-muted lg:inline">
           Sesión: <strong class="text-ink">{session.u}</strong>
         </span>
         <form action="/api/auth/logout" method="POST">
-          <button type="submit" class="btn-secondary px-4 py-2 text-sm">
-            Cerrar sesión
+          <button
+            type="submit"
+            class="btn-secondary inline-flex items-center gap-1.5 p-2 text-sm sm:px-4 sm:py-2"
+            aria-label="Cerrar sesión"
+            title="Cerrar sesión"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+              <polyline points="16 17 21 12 16 7"></polyline>
+              <line x1="21" y1="12" x2="9" y2="12"></line>
+            </svg>
+            <span class="hidden sm:inline">Cerrar sesión</span>
           </button>
         </form>
       </div>

@@ -31,18 +31,20 @@ import { products } from '../data/products';
           </svg>
         </div>
         <div class="flex flex-col leading-tight">
-          <span class="font-display text-xl font-bold text-ink">TechCatalog</span>
-          <span class="text-xs text-muted">Laptops con entrega a todo el Perú</span>
+          <span class="font-display text-lg font-bold text-ink sm:text-xl">TechCatalog</span>
+          <span class="hidden text-xs text-muted sm:block">Laptops con entrega a todo el Perú</span>
         </div>
       </a>
 
-      <nav class="flex items-center gap-3 text-sm text-inkSoft sm:gap-4">
+      <nav class="flex items-center gap-2 text-sm text-inkSoft sm:gap-4">
         <a href="#productos" class="hidden transition hover:text-accent md:inline">Productos</a>
         <a href="#contacto" class="hidden transition hover:text-accent md:inline">Contacto</a>
         <ThemeToggle />
         <a
           href="/admin"
-          class="inline-flex items-center gap-1.5 rounded-full border border-borderStrong bg-surfaceAlt px-3 py-1.5 font-medium text-blueRibbon-700 transition hover:bg-surfaceBlue dark:text-blueRibbon-400"
+          class="inline-flex items-center gap-1.5 rounded-full border border-borderStrong bg-surfaceAlt p-2 font-medium text-blueRibbon-700 transition hover:bg-surfaceBlue dark:text-blueRibbon-400 sm:px-3 sm:py-1.5"
+          aria-label="Panel admin"
+          title="Admin"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -57,7 +59,7 @@ import { products } from '../data/products';
           >
             <path d="M12 2 4 5v6c0 5.5 3.5 10.7 8 11 4.5-.3 8-5.5 8-11V5l-8-3z"></path>
           </svg>
-          Admin
+          <span class="hidden sm:inline">Admin</span>
         </a>
       </nav>
     </div>
