@@ -1,12 +1,11 @@
 # TechCatalog
 
-Catálogo de laptops construido con **Astro + Tailwind CSS** que registra pedidos en **SQLite** y redirige a **WhatsApp** para coordinar la entrega.
+Catálogo estático de laptops construido con **Astro + Tailwind CSS**. El formulario de pedido no usa base de datos: los datos llenados se envían directamente al **WhatsApp** del vendedor con un mensaje preformateado.
 
 ## Stack
 
-- Astro 4 (modo `server` con adaptador Node)
+- Astro 4 (modo `static`)
 - Tailwind CSS 3
-- better-sqlite3 (persistencia local en `orders.db`)
 - JavaScript vanilla para el modal
 
 ## Requisitos
@@ -21,8 +20,6 @@ cd tech-catalog
 npm install
 ```
 
-> `better-sqlite3` compila bindings nativos durante `npm install`. En macOS basta con tener Xcode Command Line Tools instalado (`xcode-select --install`).
-
 ## Desarrollo
 
 ```bash
@@ -31,14 +28,38 @@ npm run dev
 
 Abre [http://localhost:4321](http://localhost:4321).
 
-## Producción
+## Build local
 
 ```bash
 npm run build
 npm run preview
 ```
 
-El build genera un servidor Node en `dist/server/entry.mjs`.
+El build genera `dist/` con HTML/CSS/JS puro, listo para cualquier CDN.
+
+## Despliegue en Vercel
+
+Vercel autodetecta proyectos Astro estáticos. Tienes dos rutas:
+
+### Opción A — Desde la web (recomendada)
+
+1. Sube el repo a GitHub/GitLab/Bitbucket.
+2. En [vercel.com/new](https://vercel.com/new), importa el repositorio.
+3. Vercel detecta Astro automáticamente:
+   - **Framework Preset:** Astro
+   - **Build Command:** `npm run build`
+   - **Output Directory:** `dist`
+4. Pulsa **Deploy**.
+
+### Opción B — Desde la terminal
+
+```bash
+npm i -g vercel
+vercel        # primera vez: te guía para enlazar el proyecto
+vercel --prod # despliegue a producción
+```
+
+No hay variables de entorno que configurar.
 
 ## Estructura
 
@@ -46,15 +67,13 @@ El build genera un servidor Node en `dist/server/entry.mjs`.
 tech-catalog/
 ├── src/
 │   ├── components/
-│   │   ├── OrderModal.astro     # Modal + lógica de envío
+│   │   ├── OrderModal.astro     # Modal + envío a WhatsApp
 │   │   └── ProductCard.astro    # Tarjeta de producto
 │   ├── data/
 │   │   └── products.ts          # Catálogo hardcoded (6 laptops)
 │   ├── layouts/
 │   │   └── Layout.astro
 │   ├── pages/
-│   │   ├── api/
-│   │   │   └── orders.ts        # POST /api/orders -> SQLite
 │   │   └── index.astro
 │   └── styles/global.css
 ├── astro.config.mjs
@@ -62,53 +81,23 @@ tech-catalog/
 └── package.json
 ```
 
-## API
-
-### `POST /api/orders`
-
-Body JSON:
-
-```json
-{
-  "nombres": "Juan Carlos",
-  "apellidos": "Pérez Quispe",
-  "dni": "12345678",
-  "direccion": "Av. Principal 123, Lima",
-  "producto": "MacBook Air M2"
-}
-```
-
-Respuesta exitosa (`201`):
-
-```json
-{ "success": true, "orderId": 1 }
-```
-
-Errores: `400` (datos inválidos) o `500` (fallo guardando).
-
-## Base de datos
-
-El archivo `orders.db` se crea automáticamente en la raíz del proyecto la primera vez que arranca el servidor. Tabla:
-
-```sql
-CREATE TABLE orders (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  nombres TEXT NOT NULL,
-  apellidos TEXT NOT NULL,
-  dni TEXT NOT NULL,
-  direccion TEXT NOT NULL,
-  producto TEXT NOT NULL,
-  created_at TEXT NOT NULL DEFAULT (datetime('now'))
-);
-```
-
 ## Flujo de pedido
 
 1. Usuario pulsa **Comprar ahora** en una tarjeta.
 2. Se abre el modal con el nombre del producto en el encabezado.
-3. Al confirmar, el frontend valida y hace `POST /api/orders`.
-4. Si el backend responde OK, se abre WhatsApp en una nueva pestaña con el mensaje precompletado:
+3. Al confirmar, el frontend valida (DNI de 8 dígitos, campos obligatorios) y construye el mensaje de WhatsApp.
+4. Se abre `https://wa.me/51936114196?text=...` en una nueva pestaña con todos los datos del formulario precargados:
 
 ```
-https://wa.me/51936114196?text=Hola!%20Quiero%20coordinar%20mi%20pedido%20de%20...
+¡Hola! Quiero coordinar mi pedido:
+
+*Producto:* MacBook Air M2
+*Nombres:* Juan Carlos
+*Apellidos:* Pérez Quispe
+*DNI:* 12345678
+*Dirección de entrega:* Av. Principal 123, Lima
 ```
+
+## Cambiar el número de WhatsApp
+
+Edita la constante `WHATSAPP_NUMBER` en `src/components/OrderModal.astro` (frontmatter) y el `href` del footer en `src/pages/index.astro`.

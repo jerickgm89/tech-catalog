@@ -4,10 +4,7 @@ node_modules/
 # Build output
 dist/
 .astro/
-
-# Local database
-orders.db
-orders.db-journal
+.vercel/
 
 # Env
 .env

@@ -195,7 +195,7 @@ const WHATSAPP_NUMBER = '51936114196';
     errorBox.classList.remove('hidden');
   };
 
-  form?.addEventListener('submit', async (event) => {
+  form?.addEventListener('submit', (event) => {
     event.preventDefault();
     if (!(form instanceof HTMLFormElement)) return;
 
@@ -218,31 +218,19 @@ const WHATSAPP_NUMBER = '51936114196';
     }
 
     errorBox?.classList.add('hidden');
-    if (submitBtn instanceof HTMLButtonElement) submitBtn.disabled = true;
-    if (submitLabel) submitLabel.textContent = 'Procesando...';
 
-    try {
-      const response = await fetch('/api/orders', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      });
+    const message = [
+      '¡Hola! Quiero coordinar mi pedido:',
+      '',
+      `*Producto:* ${data.producto}`,
+      `*Nombres:* ${data.nombres}`,
+      `*Apellidos:* ${data.apellidos}`,
+      `*DNI:* ${data.dni}`,
+      `*Dirección de entrega:* ${data.direccion}`,
+    ].join('\n');
 
-      const result = await response.json().catch(() => ({}));
-
-      if (!response.ok || !result?.success) {
-        throw new Error(result?.error || 'No se pudo registrar el pedido');
-      }
-
-      const message = `Hola! Quiero coordinar mi pedido de ${data.producto} - Nombre: ${data.nombres} ${data.apellidos}`;
-      const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
-      window.open(url, '_blank', 'noopener,noreferrer');
-      closeModal();
-    } catch (err) {
-      showError(err instanceof Error ? err.message : 'Ocurrió un error inesperado.');
-    } finally {
-      if (submitBtn instanceof HTMLButtonElement) submitBtn.disabled = false;
-      if (submitLabel) submitLabel.textContent = 'Confirmar pedido';
-    }
+    const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+    window.open(url, '_blank', 'noopener,noreferrer');
+    closeModal();
   });
 </script>
