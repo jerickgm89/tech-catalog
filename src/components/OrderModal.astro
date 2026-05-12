@@ -1,7 +1,8 @@
 ---
-import { products } from '../data/products';
+import { products, formatPrice } from '../data/products';
 
-const productNames = products.map((p) => p.name);
+const availableProducts = products.filter((p) => p.disponible);
+const WHATSAPP_NUMBER = '51999999999';
 ---
 
 <button
@@ -11,7 +12,7 @@ const productNames = products.map((p) => p.name);
   aria-label="Hacer un pedido"
 >
   <span>Hacer pedido</span>
-  <span class="text-xl">🍰</span>
+  <span class="text-xl">🛒</span>
 </button>
 
 <div
@@ -22,7 +23,7 @@ const productNames = products.map((p) => p.name);
   aria-labelledby="order-modal-title"
 >
   <div
-    class="relative w-full max-w-lg animate-scale-in overflow-hidden rounded-2xl border border-white/10 bg-surface shadow-glowStrong"
+    class="relative flex max-h-[92vh] w-full max-w-2xl animate-scale-in flex-col overflow-hidden rounded-2xl border border-white/10 bg-surface shadow-glowStrong"
   >
     <div class="bg-accent-gradient px-6 py-5 text-slate-950">
       <div class="flex items-start justify-between gap-4">
@@ -34,7 +35,7 @@ const productNames = products.map((p) => p.name);
             id="order-modal-title"
             class="font-display text-2xl font-bold leading-tight"
           >
-            Cuéntanos los detalles 🍰
+            Detalles del pedido 🛒
           </h3>
         </div>
         <button
@@ -61,98 +62,144 @@ const productNames = products.map((p) => p.name);
       </div>
     </div>
 
-    <form id="order-form" class="space-y-4 px-6 py-6" novalidate>
-      <div>
-        <label for="nombre" class="mb-1.5 block text-sm font-medium text-slate-300">
-          Nombre del cliente <span class="text-accent">*</span>
-        </label>
-        <input
-          type="text"
-          id="nombre"
-          name="nombre"
-          class="input-field"
-          placeholder="Ej. Juan Pérez"
-          required
-          autocomplete="name"
-        />
+    <form id="order-form" class="flex flex-1 flex-col overflow-hidden" novalidate>
+      <div class="flex-1 space-y-5 overflow-y-auto px-6 py-6">
+        <div>
+          <h4 class="mb-2 text-sm font-semibold uppercase tracking-wider text-slate-400">
+            Productos
+          </h4>
+          <p class="mb-3 text-xs text-slate-500">
+            Indica la cantidad que deseas para cada producto.
+          </p>
+          <ul class="space-y-2">
+            {availableProducts.map((p) => (
+              <li
+                class="flex items-center justify-between gap-3 rounded-xl border border-white/5 bg-surfaceAlt/60 px-4 py-3"
+                data-product-id={p.id}
+              >
+                <div class="min-w-0 flex-1">
+                  <p class="truncate font-medium text-white">{p.name}</p>
+                  <p class="text-xs text-slate-400">{formatPrice(p.price)}</p>
+                </div>
+                <div class="flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    class="qty-dec grid h-8 w-8 place-items-center rounded-lg border border-white/10 bg-surface text-lg font-bold text-slate-300 transition hover:border-accent hover:text-accent"
+                    aria-label={`Disminuir cantidad de ${p.name}`}
+                  >−</button>
+                  <input
+                    type="number"
+                    name={`qty-${p.id}`}
+                    class="qty-input h-8 w-14 rounded-lg border border-white/10 bg-surface text-center text-sm font-semibold text-white outline-none transition focus:border-accent"
+                    min="0"
+                    max="99"
+                    value="0"
+                    data-product-name={p.name}
+                    data-product-price={p.price}
+                  />
+                  <button
+                    type="button"
+                    class="qty-inc grid h-8 w-8 place-items-center rounded-lg border border-white/10 bg-surface text-lg font-bold text-slate-300 transition hover:border-accent hover:text-accent"
+                    aria-label={`Aumentar cantidad de ${p.name}`}
+                  >+</button>
+                </div>
+              </li>
+            ))}
+          </ul>
+          <p class="mt-3 text-right text-sm text-slate-300">
+            Total: <span id="order-total" class="font-display text-lg font-bold text-white">S/ 0</span>
+          </p>
+        </div>
+
+        <div class="border-t border-white/5 pt-5">
+          <h4 class="mb-3 text-sm font-semibold uppercase tracking-wider text-slate-400">
+            Tus datos
+          </h4>
+          <div class="space-y-3">
+            <div>
+              <label for="nombre" class="mb-1.5 block text-sm font-medium text-slate-300">
+                Nombre del cliente <span class="text-accent">*</span>
+              </label>
+              <input
+                type="text"
+                id="nombre"
+                name="nombre"
+                class="input-field"
+                placeholder="Ej. Juan Pérez"
+                required
+                autocomplete="name"
+              />
+            </div>
+
+            <div>
+              <label for="telefono" class="mb-1.5 block text-sm font-medium text-slate-300">
+                Teléfono <span class="text-accent">*</span>
+              </label>
+              <input
+                type="tel"
+                id="telefono"
+                name="telefono"
+                class="input-field"
+                placeholder="Ej. 999 999 999"
+                required
+                autocomplete="tel"
+                pattern="[0-9+\s()-]{6,20}"
+              />
+            </div>
+
+            <div>
+              <label for="direccion" class="mb-1.5 block text-sm font-medium text-slate-300">
+                Dirección de entrega <span class="text-accent">*</span>
+              </label>
+              <textarea
+                id="direccion"
+                name="direccion"
+                rows="2"
+                class="input-field resize-none"
+                placeholder="Av. Principal 123, distrito, ciudad"
+                required></textarea>
+            </div>
+
+            <div>
+              <label for="notas" class="mb-1.5 block text-sm font-medium text-slate-300">
+                Notas adicionales
+                <span class="text-xs font-normal text-slate-500">(opcional)</span>
+              </label>
+              <textarea
+                id="notas"
+                name="notas"
+                rows="2"
+                class="input-field resize-none"
+                placeholder='Ej. "entregar después de las 6pm", "sin envoltura"…'
+              ></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div
+          id="form-error"
+          class="hidden rounded-xl border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-300"
+        ></div>
+
+        <div
+          id="form-success"
+          class="hidden rounded-xl border border-emerald-500/40 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-300"
+        ></div>
       </div>
 
-      <div>
-        <label for="telefono" class="mb-1.5 block text-sm font-medium text-slate-300">
-          Teléfono <span class="text-accent">*</span>
-        </label>
-        <input
-          type="tel"
-          id="telefono"
-          name="telefono"
-          class="input-field"
-          placeholder="Ej. 999 999 999"
-          required
-          autocomplete="tel"
-          pattern="[0-9+\s()-]{6,20}"
-        />
-      </div>
-
-      <div>
-        <label for="direccion" class="mb-1.5 block text-sm font-medium text-slate-300">
-          Dirección de entrega <span class="text-accent">*</span>
-        </label>
-        <textarea
-          id="direccion"
-          name="direccion"
-          rows="2"
-          class="input-field resize-none"
-          placeholder="Av. Principal 123, distrito, ciudad"
-          required></textarea>
-      </div>
-
-      <div>
-        <label for="producto" class="mb-1.5 block text-sm font-medium text-slate-300">
-          ¿Qué producto quieres? <span class="text-accent">*</span>
-        </label>
-        <select id="producto" name="producto" class="input-field" required>
-          <option value="" disabled selected>Selecciona un producto…</option>
-          {productNames.map((name) => <option value={name}>{name}</option>)}
-        </select>
-      </div>
-
-      <div>
-        <label for="notas" class="mb-1.5 block text-sm font-medium text-slate-300">
-          Notas adicionales
-          <span class="text-xs font-normal text-slate-500">(opcional)</span>
-        </label>
-        <textarea
-          id="notas"
-          name="notas"
-          rows="3"
-          class="input-field resize-none"
-          placeholder='Ej. "sin azúcar", "con dedicatoria", entregar después de las 6pm…'
-        ></textarea>
-      </div>
-
-      <div
-        id="form-error"
-        class="hidden rounded-xl border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-300"
-      ></div>
-
-      <div
-        id="form-success"
-        class="hidden rounded-xl border border-emerald-500/40 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-300"
-      ></div>
-
-      <div class="flex flex-col-reverse gap-2 pt-2 sm:flex-row sm:justify-end">
+      <div class="flex flex-col-reverse gap-2 border-t border-white/5 bg-surface/80 px-6 py-4 sm:flex-row sm:justify-end">
         <button type="button" id="modal-cancel" class="btn-secondary">
           Cancelar
         </button>
         <button type="submit" id="submit-btn" class="btn-primary">
-          <span id="submit-label">Enviar pedido</span>
+          <span id="submit-label">Enviar pedido y abrir WhatsApp</span>
         </button>
       </div>
     </form>
   </div>
 </div>
 
-<script is:inline>
+<script is:inline define:vars={{ WHATSAPP_NUMBER }}>
   const modal = document.getElementById('order-modal');
   const openBtn = document.getElementById('open-order-modal');
   const form = document.getElementById('order-form');
@@ -162,16 +209,53 @@ const productNames = products.map((p) => p.name);
   const submitLabel = document.getElementById('submit-label');
   const closeBtn = document.getElementById('modal-close');
   const cancelBtn = document.getElementById('modal-cancel');
+  const totalEl = document.getElementById('order-total');
 
-  const openModal = () => {
+  const qtyInputs = () =>
+    /** @type {NodeListOf<HTMLInputElement>} */ (
+      form?.querySelectorAll('.qty-input')
+    );
+
+  const formatPrice = (n) =>
+    `S/ ${Number(n).toLocaleString('es-PE')}`;
+
+  const recalcTotal = () => {
+    let total = 0;
+    qtyInputs()?.forEach((input) => {
+      const qty = Number(input.value) || 0;
+      const price = Number(input.dataset.productPrice) || 0;
+      total += qty * price;
+    });
+    if (totalEl) totalEl.textContent = formatPrice(total);
+  };
+
+  const resetQuantities = () => {
+    qtyInputs()?.forEach((input) => {
+      input.value = '0';
+    });
+    recalcTotal();
+  };
+
+  const setQuantity = (productName, qty) => {
+    qtyInputs()?.forEach((input) => {
+      if (input.dataset.productName === productName) {
+        input.value = String(qty);
+      }
+    });
+    recalcTotal();
+  };
+
+  const openModal = (productName) => {
     if (!modal) return;
+    resetQuantities();
+    if (productName) setQuantity(productName, 1);
     modal.classList.remove('hidden');
     document.body.style.overflow = 'hidden';
     errorBox?.classList.add('hidden');
     successBox?.classList.add('hidden');
     setTimeout(() => {
-      const firstInput = form?.querySelector('input,select,textarea');
-      if (firstInput instanceof HTMLElement) firstInput.focus();
+      const firstField = form?.querySelector('#nombre');
+      if (firstField instanceof HTMLElement) firstField.focus();
     }, 50);
   };
 
@@ -183,9 +267,54 @@ const productNames = products.map((p) => p.name);
 
   const resetForm = () => {
     if (form instanceof HTMLFormElement) form.reset();
+    resetQuantities();
   };
 
-  openBtn?.addEventListener('click', openModal);
+  openBtn?.addEventListener('click', () => openModal());
+
+  document.addEventListener('click', (event) => {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+
+    const buyBtn = target.closest('[data-open-order]');
+    if (buyBtn instanceof HTMLElement) {
+      openModal(buyBtn.dataset.openOrder || undefined);
+      return;
+    }
+
+    if (target.closest('.qty-inc')) {
+      const li = target.closest('li[data-product-id]');
+      const input = li?.querySelector('.qty-input');
+      if (input instanceof HTMLInputElement) {
+        const next = Math.min(99, (Number(input.value) || 0) + 1);
+        input.value = String(next);
+        recalcTotal();
+      }
+      return;
+    }
+    if (target.closest('.qty-dec')) {
+      const li = target.closest('li[data-product-id]');
+      const input = li?.querySelector('.qty-input');
+      if (input instanceof HTMLInputElement) {
+        const next = Math.max(0, (Number(input.value) || 0) - 1);
+        input.value = String(next);
+        recalcTotal();
+      }
+      return;
+    }
+  });
+
+  form?.addEventListener('input', (event) => {
+    if (
+      event.target instanceof HTMLInputElement &&
+      event.target.classList.contains('qty-input')
+    ) {
+      const v = Math.max(0, Math.min(99, Math.floor(Number(event.target.value) || 0)));
+      event.target.value = String(v);
+      recalcTotal();
+    }
+  });
+
   closeBtn?.addEventListener('click', () => {
     closeModal();
     resetForm();
@@ -223,6 +352,37 @@ const productNames = products.map((p) => p.name);
     errorBox?.classList.add('hidden');
   };
 
+  const collectItems = () => {
+    const items = [];
+    qtyInputs()?.forEach((input) => {
+      const qty = Number(input.value) || 0;
+      if (qty > 0) {
+        items.push({
+          producto: input.dataset.productName || '',
+          cantidad: qty,
+          precio: Number(input.dataset.productPrice) || 0,
+        });
+      }
+    });
+    return items;
+  };
+
+  const buildWhatsappMessage = (data, items, total) => {
+    const lines = ['Hola, quiero pedir:', ''];
+    lines.push('*Productos:*');
+    for (const it of items) {
+      lines.push(`- ${it.producto} x${it.cantidad} (${formatPrice(it.precio * it.cantidad)})`);
+    }
+    lines.push('');
+    lines.push(`*Total:* ${formatPrice(total)}`);
+    lines.push('');
+    lines.push(`*Nombre:* ${data.nombre}`);
+    lines.push(`*Teléfono:* ${data.telefono}`);
+    lines.push(`*Dirección:* ${data.direccion}`);
+    if (data.notas) lines.push(`*Notas:* ${data.notas}`);
+    return lines.join('\n');
+  };
+
   form?.addEventListener('submit', async (event) => {
     event.preventDefault();
     if (!(form instanceof HTMLFormElement)) return;
@@ -231,15 +391,19 @@ const productNames = products.map((p) => p.name);
       nombre: form.nombre.value.trim(),
       telefono: form.telefono.value.trim(),
       direccion: form.direccion.value.trim(),
-      producto: form.producto.value.trim(),
       notas: form.notas.value.trim(),
     };
 
-    if (!data.nombre || !data.telefono || !data.direccion || !data.producto) {
-      showError('Por favor completa nombre, teléfono, dirección y producto.');
+    const items = collectItems();
+
+    if (items.length === 0) {
+      showError('Selecciona al menos un producto con cantidad mayor a 0.');
       return;
     }
-
+    if (!data.nombre || !data.telefono || !data.direccion) {
+      showError('Completa nombre, teléfono y dirección.');
+      return;
+    }
     if (!/^[0-9+\s()-]{6,20}$/.test(data.telefono)) {
       showError('Ingresa un teléfono válido.');
       return;
@@ -253,7 +417,10 @@ const productNames = products.map((p) => p.name);
       const response = await fetch('/api/pedidos', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
+        body: JSON.stringify({
+          ...data,
+          items: items.map((i) => ({ producto: i.producto, cantidad: i.cantidad })),
+        }),
       });
 
       const result = await response.json().catch(() => ({}));
@@ -262,16 +429,21 @@ const productNames = products.map((p) => p.name);
         throw new Error(result?.error || 'No se pudo registrar el pedido');
       }
 
-      showSuccess(`¡Listo! Tu pedido fue registrado (N° ${result.pedidoId}).`);
-      resetForm();
+      const total = items.reduce((s, i) => s + i.precio * i.cantidad, 0);
+      const message = buildWhatsappMessage(data, items, total);
+      const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+      window.open(url, '_blank', 'noopener,noreferrer');
+
+      showSuccess(`¡Listo! Pedido N° ${result.pedidoId} registrado. Abrimos WhatsApp para que confirmes.`);
       setTimeout(() => {
         closeModal();
+        resetForm();
       }, 1800);
     } catch (err) {
       showError(err instanceof Error ? err.message : 'Ocurrió un error inesperado.');
     } finally {
       if (submitBtn instanceof HTMLButtonElement) submitBtn.disabled = false;
-      if (submitLabel) submitLabel.textContent = 'Enviar pedido';
+      if (submitLabel) submitLabel.textContent = 'Enviar pedido y abrir WhatsApp';
     }
   });
 </script>

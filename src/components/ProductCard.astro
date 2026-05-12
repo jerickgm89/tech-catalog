@@ -7,10 +7,6 @@ interface Props {
 }
 
 const { product } = Astro.props;
-const WHATSAPP_NUMBER = '51999999999';
-
-const whatsappMessage = `Hola, quiero pedir: ${product.name} ${formatPrice(product.price)}`;
-const whatsappHref = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(whatsappMessage)}`;
 ---
 
 <article
@@ -77,15 +73,14 @@ const whatsappHref = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent
         </span>
       </div>
       {product.disponible ? (
-        <a
-          href={whatsappHref}
-          target="_blank"
-          rel="noopener noreferrer"
+        <button
+          type="button"
           class="btn-primary"
-          aria-label={`Pedir ${product.name} por WhatsApp`}
+          data-open-order={product.name}
+          aria-label={`Pedir ${product.name}`}
         >
           Pedir ahora 🛒
-        </a>
+        </button>
       ) : (
         <span class="text-sm font-medium text-gray-400">
           😔 Agotado por el momento
