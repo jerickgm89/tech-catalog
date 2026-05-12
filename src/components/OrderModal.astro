@@ -3,6 +3,14 @@ import { products, formatPrice } from '../data/products';
 
 const availableProducts = products.filter((p) => p.disponible);
 const WHATSAPP_NUMBER = '51936114196';
+
+const PRODUCTS_JSON = availableProducts.map((p) => ({
+  id: p.id,
+  name: p.name,
+  brand: p.brand,
+  price: p.price,
+  image: p.image,
+}));
 ---
 
 <button
@@ -65,50 +73,52 @@ const WHATSAPP_NUMBER = '51936114196';
     <form id="order-form" class="flex flex-1 flex-col overflow-hidden" novalidate>
       <div class="flex-1 space-y-5 overflow-y-auto px-6 py-6">
         <div>
-          <h4 class="mb-2 text-sm font-semibold uppercase tracking-wider text-blueRibbon-700">
-            Productos
-          </h4>
-          <p class="mb-3 text-xs text-slate-500">
-            Indica la cantidad que deseas para cada producto.
-          </p>
-          <ul class="space-y-2">
-            {availableProducts.map((p) => (
-              <li
-                class="flex items-center justify-between gap-3 rounded-xl border border-blueRibbon-100 bg-blueRibbon-50/60 px-4 py-3"
-                data-product-id={p.id}
+          <div class="mb-3 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <h4 class="text-sm font-semibold uppercase tracking-wider text-blueRibbon-700">
+                Tu carrito
+              </h4>
+              <p class="mt-0.5 text-xs text-slate-500">
+                Agrega productos y ajusta las cantidades.
+              </p>
+            </div>
+            <div class="relative">
+              <select
+                id="add-product-select"
+                class="w-full appearance-none rounded-xl border border-blueRibbon-200 bg-white py-2.5 pl-4 pr-10 text-sm font-medium text-blueRibbon-700 outline-none transition focus:border-accent sm:w-72"
               >
-                <div class="min-w-0 flex-1">
-                  <p class="truncate font-medium text-ink">{p.name}</p>
-                  <p class="text-xs text-slate-500">{formatPrice(p.price)}</p>
-                </div>
-                <div class="flex items-center gap-1.5">
-                  <button
-                    type="button"
-                    class="qty-dec grid h-8 w-8 place-items-center rounded-lg border border-blueRibbon-200 bg-white text-lg font-bold text-blueRibbon-700 transition hover:border-accent hover:bg-blueRibbon-50"
-                    aria-label={`Disminuir cantidad de ${p.name}`}
-                  >−</button>
-                  <input
-                    type="number"
-                    name={`qty-${p.id}`}
-                    class="qty-input h-8 w-14 rounded-lg border border-blueRibbon-200 bg-white text-center text-sm font-semibold text-ink outline-none transition focus:border-accent"
-                    min="0"
-                    max="99"
-                    value="0"
-                    data-product-name={p.name}
-                    data-product-price={p.price}
-                  />
-                  <button
-                    type="button"
-                    class="qty-inc grid h-8 w-8 place-items-center rounded-lg border border-blueRibbon-200 bg-white text-lg font-bold text-blueRibbon-700 transition hover:border-accent hover:bg-blueRibbon-50"
-                    aria-label={`Aumentar cantidad de ${p.name}`}
-                  >+</button>
-                </div>
-              </li>
-            ))}
-          </ul>
-          <p class="mt-3 text-right text-sm text-slate-600">
-            Total: <span id="order-total" class="font-display text-lg font-bold text-ink">S/ 0</span>
-          </p>
+                <option value="" disabled selected>+ Agregar producto…</option>
+              </select>
+              <svg
+                class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-blueRibbon-700"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.4"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </div>
+          </div>
+
+          <div id="cart-empty" class="rounded-xl border border-dashed border-blueRibbon-200 bg-blueRibbon-50/40 px-4 py-8 text-center">
+            <p class="text-3xl">🛒</p>
+            <p class="mt-2 text-sm font-medium text-inkSoft">Tu carrito está vacío</p>
+            <p class="mt-1 text-xs text-slate-500">
+              Usa el selector de arriba para añadir productos.
+            </p>
+          </div>
+
+          <div id="cart-items" class="hidden space-y-2"></div>
+
+          <div class="mt-3 flex items-center justify-end gap-2 text-sm text-slate-600">
+            <span>Total:</span>
+            <span id="order-total" class="font-display text-xl font-bold text-ink">S/ 0</span>
+          </div>
         </div>
 
         <div class="border-t border-blueRibbon-100 pt-5">
@@ -199,7 +209,7 @@ const WHATSAPP_NUMBER = '51936114196';
   </div>
 </div>
 
-<script is:inline define:vars={{ WHATSAPP_NUMBER }}>
+<script is:inline define:vars={{ WHATSAPP_NUMBER, PRODUCTS: PRODUCTS_JSON }}>
   const modal = document.getElementById('order-modal');
   const openBtn = document.getElementById('open-order-modal');
   const form = document.getElementById('order-form');
@@ -210,40 +220,165 @@ const WHATSAPP_NUMBER = '51936114196';
   const closeBtn = document.getElementById('modal-close');
   const cancelBtn = document.getElementById('modal-cancel');
   const totalEl = document.getElementById('order-total');
+  const cartContainer = document.getElementById('cart-items');
+  const cartEmpty = document.getElementById('cart-empty');
+  const addSelect = document.getElementById('add-product-select');
 
-  const qtyInputs = () =>
-    /** @type {NodeListOf<HTMLInputElement>} */ (
-      form?.querySelectorAll('.qty-input')
-    );
+  const productsById = new Map();
+  for (const p of PRODUCTS) productsById.set(p.id, p);
+
+  /** @type {Map<number, number>} productId -> cantidad */
+  const cart = new Map();
 
   const formatPrice = (n) =>
     `S/ ${Number(n).toLocaleString('es-PE')}`;
 
+  const escapeHtml = (str) =>
+    String(str).replace(/[&<>"']/g, (c) => ({
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#39;',
+    }[c]));
+
   const recalcTotal = () => {
     let total = 0;
-    qtyInputs()?.forEach((input) => {
-      const qty = Number(input.value) || 0;
-      const price = Number(input.dataset.productPrice) || 0;
-      total += qty * price;
-    });
+    for (const [id, qty] of cart) {
+      const p = productsById.get(id);
+      if (p) total += p.price * qty;
+    }
     if (totalEl) totalEl.textContent = formatPrice(total);
+  };
+
+  const renderDropdown = () => {
+    if (!(addSelect instanceof HTMLSelectElement)) return;
+    addSelect.innerHTML = '';
+
+    const placeholder = document.createElement('option');
+    placeholder.value = '';
+    placeholder.disabled = true;
+    placeholder.selected = true;
+    placeholder.textContent =
+      cart.size >= PRODUCTS.length
+        ? 'Ya agregaste todos los productos'
+        : '+ Agregar producto…';
+    addSelect.appendChild(placeholder);
+
+    for (const p of PRODUCTS) {
+      if (cart.has(p.id)) continue;
+      const opt = document.createElement('option');
+      opt.value = String(p.id);
+      opt.textContent = `${p.name} — ${formatPrice(p.price)}`;
+      addSelect.appendChild(opt);
+    }
+
+    addSelect.disabled = cart.size >= PRODUCTS.length;
+  };
+
+  const renderCart = () => {
+    if (!cartContainer || !cartEmpty) return;
+
+    if (cart.size === 0) {
+      cartContainer.classList.add('hidden');
+      cartContainer.innerHTML = '';
+      cartEmpty.classList.remove('hidden');
+    } else {
+      cartEmpty.classList.add('hidden');
+      cartContainer.classList.remove('hidden');
+      cartContainer.innerHTML = '';
+
+      for (const [id, cantidad] of cart) {
+        const p = productsById.get(id);
+        if (!p) continue;
+        const subtotal = p.price * cantidad;
+
+        const item = document.createElement('div');
+        item.className =
+          'flex items-center gap-3 rounded-xl border border-blueRibbon-100 bg-blueRibbon-50/40 p-3';
+        item.dataset.productId = String(id);
+        item.innerHTML = `
+          <img
+            src="${escapeHtml(p.image)}"
+            alt="${escapeHtml(p.name)}"
+            class="h-14 w-14 flex-shrink-0 rounded-lg border border-blueRibbon-100 bg-white object-cover sm:h-16 sm:w-16"
+            loading="lazy"
+          />
+          <div class="min-w-0 flex-1">
+            <p class="truncate text-sm font-medium text-ink sm:text-base">${escapeHtml(p.name)}</p>
+            <p class="text-xs text-slate-500">${escapeHtml(p.brand)} · ${formatPrice(p.price)} c/u</p>
+            <p class="mt-0.5 text-xs"><span class="text-slate-500">Subtotal: </span><span class="font-semibold text-blueRibbon-700">${formatPrice(subtotal)}</span></p>
+          </div>
+          <div class="flex flex-col items-end gap-1.5">
+            <button
+              type="button"
+              class="remove-item rounded-full p-1 text-slate-400 transition hover:bg-red-50 hover:text-red-600"
+              aria-label="Quitar ${escapeHtml(p.name)}"
+              title="Quitar"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+            <div class="flex items-center gap-1">
+              <button
+                type="button"
+                class="qty-dec grid h-8 w-8 place-items-center rounded-lg border border-blueRibbon-200 bg-white text-lg font-bold text-blueRibbon-700 transition hover:border-accent hover:bg-blueRibbon-50"
+                aria-label="Disminuir"
+              >−</button>
+              <input
+                type="number"
+                class="qty-input h-8 w-12 rounded-lg border border-blueRibbon-200 bg-white text-center text-sm font-semibold text-ink outline-none transition focus:border-accent"
+                min="1"
+                max="99"
+                value="${cantidad}"
+              />
+              <button
+                type="button"
+                class="qty-inc grid h-8 w-8 place-items-center rounded-lg border border-blueRibbon-200 bg-white text-lg font-bold text-blueRibbon-700 transition hover:border-accent hover:bg-blueRibbon-50"
+                aria-label="Aumentar"
+              >+</button>
+            </div>
+          </div>
+        `;
+        cartContainer.appendChild(item);
+      }
+    }
+
+    recalcTotal();
+    renderDropdown();
     validateForm();
+  };
+
+  const setQuantity = (id, qty) => {
+    if (qty <= 0) {
+      cart.delete(id);
+    } else {
+      cart.set(id, Math.min(99, qty));
+    }
+    renderCart();
+  };
+
+  const addToCart = (id) => {
+    if (!productsById.has(id)) return;
+    cart.set(id, (cart.get(id) || 0) + 1);
+    renderCart();
+  };
+
+  const clearCart = () => {
+    cart.clear();
+    renderCart();
   };
 
   const validateForm = () => {
     if (!(form instanceof HTMLFormElement)) return;
-
-    let hasItem = false;
-    qtyInputs()?.forEach((input) => {
-      if ((Number(input.value) || 0) > 0) hasItem = true;
-    });
-
     const nombre = form.nombre.value.trim();
     const telefono = form.telefono.value.trim();
     const direccion = form.direccion.value.trim();
 
     const valid =
-      hasItem &&
+      cart.size > 0 &&
       nombre.length > 0 &&
       /^[0-9+\s()-]{6,20}$/.test(telefono) &&
       direccion.length > 0;
@@ -253,26 +388,13 @@ const WHATSAPP_NUMBER = '51936114196';
     }
   };
 
-  const resetQuantities = () => {
-    qtyInputs()?.forEach((input) => {
-      input.value = '0';
-    });
-    recalcTotal();
-  };
-
-  const setQuantity = (productName, qty) => {
-    qtyInputs()?.forEach((input) => {
-      if (input.dataset.productName === productName) {
-        input.value = String(qty);
-      }
-    });
-    recalcTotal();
-  };
-
   const openModal = (productName) => {
     if (!modal) return;
-    resetQuantities();
-    if (productName) setQuantity(productName, 1);
+    clearCart();
+    if (productName) {
+      const p = PRODUCTS.find((x) => x.name === productName);
+      if (p) addToCart(p.id);
+    }
     modal.classList.remove('hidden');
     document.body.style.overflow = 'hidden';
     errorBox?.classList.add('hidden');
@@ -291,51 +413,84 @@ const WHATSAPP_NUMBER = '51936114196';
 
   const resetForm = () => {
     if (form instanceof HTMLFormElement) form.reset();
-    resetQuantities();
+    clearCart();
   };
 
   openBtn?.addEventListener('click', () => openModal());
+
+  addSelect?.addEventListener('change', (event) => {
+    const target = event.target;
+    if (!(target instanceof HTMLSelectElement)) return;
+    const id = Number(target.value);
+    if (id) {
+      addToCart(id);
+      target.value = '';
+    }
+  });
 
   document.addEventListener('click', (event) => {
     const target = event.target;
     if (!(target instanceof Element)) return;
 
-    const buyBtn = target.closest('[data-open-order]');
-    if (buyBtn instanceof HTMLElement) {
-      openModal(buyBtn.dataset.openOrder || undefined);
+    const openOrderBtn = target.closest('[data-open-order]');
+    if (openOrderBtn instanceof HTMLElement) {
+      openModal(openOrderBtn.dataset.openOrder || undefined);
       return;
     }
 
+    if (!cartContainer?.contains(target)) return;
+    const cartItem = target.closest('[data-product-id]');
+    if (!(cartItem instanceof HTMLElement)) return;
+    const id = Number(cartItem.dataset.productId);
+    if (!id) return;
+
+    if (target.closest('.remove-item')) {
+      cart.delete(id);
+      renderCart();
+      return;
+    }
     if (target.closest('.qty-inc')) {
-      const li = target.closest('li[data-product-id]');
-      const input = li?.querySelector('.qty-input');
-      if (input instanceof HTMLInputElement) {
-        const next = Math.min(99, (Number(input.value) || 0) + 1);
-        input.value = String(next);
-        recalcTotal();
-      }
+      setQuantity(id, (cart.get(id) || 0) + 1);
       return;
     }
     if (target.closest('.qty-dec')) {
-      const li = target.closest('li[data-product-id]');
-      const input = li?.querySelector('.qty-input');
-      if (input instanceof HTMLInputElement) {
-        const next = Math.max(0, (Number(input.value) || 0) - 1);
-        input.value = String(next);
-        recalcTotal();
-      }
+      setQuantity(id, (cart.get(id) || 0) - 1);
       return;
     }
   });
 
+  cartContainer?.addEventListener('input', (event) => {
+    const target = event.target;
+    if (!(target instanceof HTMLInputElement)) return;
+    if (!target.classList.contains('qty-input')) return;
+    const cartItem = target.closest('[data-product-id]');
+    if (!(cartItem instanceof HTMLElement)) return;
+    const id = Number(cartItem.dataset.productId);
+    if (!id) return;
+    const raw = Math.floor(Number(target.value) || 0);
+    const qty = Math.max(0, Math.min(99, raw));
+    if (qty === 0) {
+      cart.delete(id);
+    } else {
+      cart.set(id, qty);
+    }
+    recalcTotal();
+    validateForm();
+  });
+
+  cartContainer?.addEventListener('change', (event) => {
+    const target = event.target;
+    if (!(target instanceof HTMLInputElement)) return;
+    if (!target.classList.contains('qty-input')) return;
+    renderCart();
+  });
+
   form?.addEventListener('input', (event) => {
+    const target = event.target;
     if (
-      event.target instanceof HTMLInputElement &&
-      event.target.classList.contains('qty-input')
+      target instanceof HTMLInputElement &&
+      target.classList.contains('qty-input')
     ) {
-      const v = Math.max(0, Math.min(99, Math.floor(Number(event.target.value) || 0)));
-      event.target.value = String(v);
-      recalcTotal();
       return;
     }
     validateForm();
@@ -380,16 +535,15 @@ const WHATSAPP_NUMBER = '51936114196';
 
   const collectItems = () => {
     const items = [];
-    qtyInputs()?.forEach((input) => {
-      const qty = Number(input.value) || 0;
-      if (qty > 0) {
-        items.push({
-          producto: input.dataset.productName || '',
-          cantidad: qty,
-          precio: Number(input.dataset.productPrice) || 0,
-        });
-      }
-    });
+    for (const [id, cantidad] of cart) {
+      const p = productsById.get(id);
+      if (!p || cantidad < 1) continue;
+      items.push({
+        producto: p.name,
+        cantidad,
+        precio: p.price,
+      });
+    }
     return items;
   };
 
@@ -423,7 +577,7 @@ const WHATSAPP_NUMBER = '51936114196';
     const items = collectItems();
 
     if (items.length === 0) {
-      showError('Selecciona al menos un producto con cantidad mayor a 0.');
+      showError('Agrega al menos un producto al carrito.');
       return;
     }
     if (!data.nombre || !data.telefono || !data.direccion) {
@@ -472,4 +626,6 @@ const WHATSAPP_NUMBER = '51936114196';
       if (submitLabel) submitLabel.textContent = 'Enviar pedido y abrir WhatsApp';
     }
   });
+
+  renderCart();
 </script>
