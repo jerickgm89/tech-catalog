@@ -114,7 +114,7 @@ tech-catalog/
 ## Flujos
 
 ### RETO 1 — Pedir ahora 🛒
-Click en el botón → abre `https://wa.me/51999999999?text=Hola,%20quiero%20pedir:%20<producto>%20<precio>` en nueva pestaña.
+Click en el botón → abre `https://wa.me/51936114196?text=Hola,%20quiero%20pedir:%20<producto>%20<precio>` en nueva pestaña.
 
 ### RETO 2 — Visibilidad
 Cuando `product.disponible === false`, la tarjeta:
