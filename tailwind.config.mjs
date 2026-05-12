@@ -4,26 +4,44 @@ export default {
   theme: {
     extend: {
       colors: {
-        background: '#0f0f0f',
-        surface: '#1a1a1a',
-        surfaceAlt: '#222222',
-        accent: '#00d4ff',
-        accentDark: '#0099cc',
-        accentGlow: 'rgba(0, 212, 255, 0.35)',
+        blueRibbon: {
+          50: '#edf7ff',
+          100: '#d6ecff',
+          200: '#b5dfff',
+          300: '#83ccff',
+          400: '#48b0ff',
+          500: '#1e8eff',
+          600: '#0671ff',
+          700: '#0061ff',
+          800: '#084bc5',
+          900: '#0d439b',
+          950: '#0e295d',
+        },
+        background: '#ffffff',
+        surface: '#ffffff',
+        surfaceAlt: '#edf7ff',
+        surfaceBlue: '#d6ecff',
+        accent: '#0671ff',
+        accentDark: '#0061ff',
+        accentSoft: '#83ccff',
+        ink: '#0e295d',
+        inkSoft: '#0d439b',
       },
       fontFamily: {
         display: ['Syne', 'sans-serif'],
         body: ['"DM Sans"', 'sans-serif'],
       },
       boxShadow: {
-        glow: '0 0 30px rgba(0, 212, 255, 0.25)',
-        glowStrong: '0 0 45px rgba(0, 212, 255, 0.45)',
+        card: '0 1px 3px rgba(14, 41, 93, 0.06), 0 2px 8px rgba(14, 41, 93, 0.04)',
+        cardHover: '0 20px 40px rgba(6, 113, 255, 0.15), 0 0 30px rgba(72, 176, 255, 0.18)',
+        glow: '0 10px 30px rgba(6, 113, 255, 0.15)',
+        glowStrong: '0 20px 50px rgba(6, 113, 255, 0.25)',
       },
       backgroundImage: {
         'accent-gradient':
-          'linear-gradient(135deg, #00d4ff 0%, #0099cc 50%, #006699 100%)',
-        'radial-glow':
-          'radial-gradient(circle at 20% 0%, rgba(0,212,255,0.15) 0%, rgba(15,15,15,0) 60%)',
+          'linear-gradient(135deg, #1e8eff 0%, #0671ff 50%, #0061ff 100%)',
+        'soft-blue':
+          'linear-gradient(180deg, #edf7ff 0%, #ffffff 100%)',
       },
       animation: {
         'fade-in': 'fadeIn 0.25s ease-out',

@@ -8,7 +8,7 @@ const WHATSAPP_NUMBER = '51999999999';
 <button
   type="button"
   id="open-order-modal"
-  class="fixed bottom-6 right-6 z-30 flex items-center gap-2 rounded-full bg-accent-gradient px-5 py-4 font-display text-base font-bold text-slate-950 shadow-glowStrong transition-all duration-300 hover:scale-105 sm:bottom-8 sm:right-8 sm:text-lg"
+  class="fixed bottom-6 right-6 z-30 flex items-center gap-2 rounded-full bg-accent-gradient px-5 py-4 font-display text-base font-bold text-white shadow-glowStrong transition-all duration-300 hover:scale-105 sm:bottom-8 sm:right-8 sm:text-lg"
   aria-label="Hacer un pedido"
 >
   <span>Hacer pedido</span>
@@ -23,17 +23,17 @@ const WHATSAPP_NUMBER = '51999999999';
   aria-labelledby="order-modal-title"
 >
   <div
-    class="relative flex max-h-[92vh] w-full max-w-2xl animate-scale-in flex-col overflow-hidden rounded-2xl border border-white/10 bg-surface shadow-glowStrong"
+    class="relative flex max-h-[92vh] w-full max-w-2xl animate-scale-in flex-col overflow-hidden rounded-2xl border border-blueRibbon-100 bg-white shadow-glowStrong"
   >
-    <div class="bg-accent-gradient px-6 py-5 text-slate-950">
+    <div class="bg-accent-gradient px-6 py-5 text-white">
       <div class="flex items-start justify-between gap-4">
         <div>
-          <p class="text-xs font-semibold uppercase tracking-[0.2em] opacity-80">
+          <p class="text-xs font-semibold uppercase tracking-[0.2em] opacity-90">
             Nuevo pedido
           </p>
           <h3
             id="order-modal-title"
-            class="font-display text-2xl font-bold leading-tight"
+            class="font-display text-2xl font-bold leading-tight text-white"
           >
             Detalles del pedido 🛒
           </h3>
@@ -42,7 +42,7 @@ const WHATSAPP_NUMBER = '51999999999';
           type="button"
           id="modal-close"
           aria-label="Cerrar"
-          class="rounded-full bg-black/15 p-2 text-slate-950 transition hover:bg-black/30"
+          class="rounded-full bg-white/15 p-2 text-white transition hover:bg-white/25"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -65,7 +65,7 @@ const WHATSAPP_NUMBER = '51999999999';
     <form id="order-form" class="flex flex-1 flex-col overflow-hidden" novalidate>
       <div class="flex-1 space-y-5 overflow-y-auto px-6 py-6">
         <div>
-          <h4 class="mb-2 text-sm font-semibold uppercase tracking-wider text-slate-400">
+          <h4 class="mb-2 text-sm font-semibold uppercase tracking-wider text-blueRibbon-700">
             Productos
           </h4>
           <p class="mb-3 text-xs text-slate-500">
@@ -74,23 +74,23 @@ const WHATSAPP_NUMBER = '51999999999';
           <ul class="space-y-2">
             {availableProducts.map((p) => (
               <li
-                class="flex items-center justify-between gap-3 rounded-xl border border-white/5 bg-surfaceAlt/60 px-4 py-3"
+                class="flex items-center justify-between gap-3 rounded-xl border border-blueRibbon-100 bg-blueRibbon-50/60 px-4 py-3"
                 data-product-id={p.id}
               >
                 <div class="min-w-0 flex-1">
-                  <p class="truncate font-medium text-white">{p.name}</p>
-                  <p class="text-xs text-slate-400">{formatPrice(p.price)}</p>
+                  <p class="truncate font-medium text-ink">{p.name}</p>
+                  <p class="text-xs text-slate-500">{formatPrice(p.price)}</p>
                 </div>
                 <div class="flex items-center gap-1.5">
                   <button
                     type="button"
-                    class="qty-dec grid h-8 w-8 place-items-center rounded-lg border border-white/10 bg-surface text-lg font-bold text-slate-300 transition hover:border-accent hover:text-accent"
+                    class="qty-dec grid h-8 w-8 place-items-center rounded-lg border border-blueRibbon-200 bg-white text-lg font-bold text-blueRibbon-700 transition hover:border-accent hover:bg-blueRibbon-50"
                     aria-label={`Disminuir cantidad de ${p.name}`}
                   >−</button>
                   <input
                     type="number"
                     name={`qty-${p.id}`}
-                    class="qty-input h-8 w-14 rounded-lg border border-white/10 bg-surface text-center text-sm font-semibold text-white outline-none transition focus:border-accent"
+                    class="qty-input h-8 w-14 rounded-lg border border-blueRibbon-200 bg-white text-center text-sm font-semibold text-ink outline-none transition focus:border-accent"
                     min="0"
                     max="99"
                     value="0"
@@ -99,25 +99,25 @@ const WHATSAPP_NUMBER = '51999999999';
                   />
                   <button
                     type="button"
-                    class="qty-inc grid h-8 w-8 place-items-center rounded-lg border border-white/10 bg-surface text-lg font-bold text-slate-300 transition hover:border-accent hover:text-accent"
+                    class="qty-inc grid h-8 w-8 place-items-center rounded-lg border border-blueRibbon-200 bg-white text-lg font-bold text-blueRibbon-700 transition hover:border-accent hover:bg-blueRibbon-50"
                     aria-label={`Aumentar cantidad de ${p.name}`}
                   >+</button>
                 </div>
               </li>
             ))}
           </ul>
-          <p class="mt-3 text-right text-sm text-slate-300">
-            Total: <span id="order-total" class="font-display text-lg font-bold text-white">S/ 0</span>
+          <p class="mt-3 text-right text-sm text-slate-600">
+            Total: <span id="order-total" class="font-display text-lg font-bold text-ink">S/ 0</span>
           </p>
         </div>
 
-        <div class="border-t border-white/5 pt-5">
-          <h4 class="mb-3 text-sm font-semibold uppercase tracking-wider text-slate-400">
+        <div class="border-t border-blueRibbon-100 pt-5">
+          <h4 class="mb-3 text-sm font-semibold uppercase tracking-wider text-blueRibbon-700">
             Tus datos
           </h4>
           <div class="space-y-3">
             <div>
-              <label for="nombre" class="mb-1.5 block text-sm font-medium text-slate-300">
+              <label for="nombre" class="mb-1.5 block text-sm font-medium text-inkSoft">
                 Nombre del cliente <span class="text-accent">*</span>
               </label>
               <input
@@ -132,7 +132,7 @@ const WHATSAPP_NUMBER = '51999999999';
             </div>
 
             <div>
-              <label for="telefono" class="mb-1.5 block text-sm font-medium text-slate-300">
+              <label for="telefono" class="mb-1.5 block text-sm font-medium text-inkSoft">
                 Teléfono <span class="text-accent">*</span>
               </label>
               <input
@@ -148,7 +148,7 @@ const WHATSAPP_NUMBER = '51999999999';
             </div>
 
             <div>
-              <label for="direccion" class="mb-1.5 block text-sm font-medium text-slate-300">
+              <label for="direccion" class="mb-1.5 block text-sm font-medium text-inkSoft">
                 Dirección de entrega <span class="text-accent">*</span>
               </label>
               <textarea
@@ -161,7 +161,7 @@ const WHATSAPP_NUMBER = '51999999999';
             </div>
 
             <div>
-              <label for="notas" class="mb-1.5 block text-sm font-medium text-slate-300">
+              <label for="notas" class="mb-1.5 block text-sm font-medium text-inkSoft">
                 Notas adicionales
                 <span class="text-xs font-normal text-slate-500">(opcional)</span>
               </label>
@@ -178,16 +178,16 @@ const WHATSAPP_NUMBER = '51999999999';
 
         <div
           id="form-error"
-          class="hidden rounded-xl border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-300"
+          class="hidden rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
         ></div>
 
         <div
           id="form-success"
-          class="hidden rounded-xl border border-emerald-500/40 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-300"
+          class="hidden rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700"
         ></div>
       </div>
 
-      <div class="flex flex-col-reverse gap-2 border-t border-white/5 bg-surface/80 px-6 py-4 sm:flex-row sm:justify-end">
+      <div class="flex flex-col-reverse gap-2 border-t border-blueRibbon-100 bg-blueRibbon-50/40 px-6 py-4 sm:flex-row sm:justify-end">
         <button type="button" id="modal-cancel" class="btn-secondary">
           Cancelar
         </button>

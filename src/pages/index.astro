@@ -8,11 +8,11 @@ import { products } from '../data/products';
 ---
 
 <Layout>
-  <header class="border-b border-white/5 bg-background/80 backdrop-blur sticky top-0 z-30">
+  <header class="sticky top-0 z-30 border-b border-blueRibbon-100 bg-white/85 backdrop-blur">
     <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
       <a href="/" class="flex items-center gap-3">
         <div
-          class="grid h-10 w-10 place-items-center rounded-xl bg-accent-gradient text-slate-950 shadow-glow"
+          class="grid h-10 w-10 place-items-center rounded-xl bg-accent-gradient text-white shadow-glow"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -30,17 +30,17 @@ import { products } from '../data/products';
           </svg>
         </div>
         <div class="flex flex-col leading-tight">
-          <span class="font-display text-xl font-bold text-white">TechCatalog</span>
-          <span class="text-xs text-slate-400">Laptops con entrega a todo el Perú</span>
+          <span class="font-display text-xl font-bold text-ink">TechCatalog</span>
+          <span class="text-xs text-slate-500">Laptops con entrega a todo el Perú</span>
         </div>
       </a>
 
-      <nav class="flex items-center gap-4 text-sm text-slate-300 sm:gap-6">
+      <nav class="flex items-center gap-4 text-sm text-inkSoft sm:gap-6">
         <a href="#productos" class="hidden transition hover:text-accent md:inline">Productos</a>
         <a href="#contacto" class="hidden transition hover:text-accent md:inline">Contacto</a>
         <a
           href="/admin"
-          class="inline-flex items-center gap-1.5 rounded-full border border-accent/30 bg-accent/10 px-3 py-1.5 font-medium text-accent transition hover:bg-accent/20"
+          class="inline-flex items-center gap-1.5 rounded-full border border-blueRibbon-200 bg-blueRibbon-50 px-3 py-1.5 font-medium text-blueRibbon-700 transition hover:bg-blueRibbon-100"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -62,21 +62,24 @@ import { products } from '../data/products';
   </header>
 
   <main class="mx-auto max-w-7xl px-4 pb-24 pt-12 sm:px-6 lg:px-8">
-    <section class="relative mb-14 overflow-hidden rounded-3xl border border-white/5 bg-surface p-8 sm:p-12">
+    <section class="relative mb-14 overflow-hidden rounded-3xl border border-blueRibbon-100 bg-blueRibbon-50 p-8 sm:p-12">
       <div
-        class="pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full bg-accent/20 blur-3xl"
+        class="pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full bg-blueRibbon-300/30 blur-3xl"
+      ></div>
+      <div
+        class="pointer-events-none absolute -bottom-32 -left-10 h-80 w-80 rounded-full bg-blueRibbon-200/40 blur-3xl"
       ></div>
       <div class="relative max-w-2xl">
         <p
-          class="mb-4 inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-accent"
+          class="mb-4 inline-flex items-center gap-2 rounded-full border border-blueRibbon-300 bg-white px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-blueRibbon-700"
         >
           <span class="h-1.5 w-1.5 animate-pulse rounded-full bg-accent"></span>
           Stock disponible
         </p>
-        <h1 class="mb-4 font-display text-4xl font-bold leading-tight text-white sm:text-5xl">
+        <h1 class="mb-4 font-display text-4xl font-bold leading-tight text-ink sm:text-5xl">
           Laptops potentes para cada presupuesto
         </h1>
-        <p class="text-base text-slate-300 sm:text-lg">
+        <p class="text-base text-inkSoft sm:text-lg">
           Encuentra la laptop ideal para estudiar, trabajar o crear. Coordinamos
           tu pedido por WhatsApp y te lo entregamos donde estés.
         </p>
@@ -86,8 +89,8 @@ import { products } from '../data/products';
     <section id="productos" class="scroll-mt-24">
       <div class="mb-8 flex items-end justify-between gap-4">
         <div>
-          <h2 class="font-display text-3xl font-bold text-white">Catálogo</h2>
-          <p class="mt-1 text-sm text-slate-400">
+          <h2 class="font-display text-3xl font-bold text-ink">Catálogo</h2>
+          <p class="mt-1 text-sm text-slate-500">
             {products.length} laptops seleccionadas para ti
           </p>
         </div>
@@ -99,11 +102,11 @@ import { products } from '../data/products';
     </section>
   </main>
 
-  <footer id="contacto" class="border-t border-white/5 bg-surface/50">
+  <footer id="contacto" class="border-t border-blueRibbon-100 bg-blueRibbon-50/50">
     <div
       class="mx-auto flex max-w-7xl flex-col items-start gap-4 px-4 py-8 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8"
     >
-      <p class="text-sm text-slate-400">
+      <p class="text-sm text-slate-500">
         © {new Date().getFullYear()} TechCatalog. Todos los derechos reservados.
         <a href="/admin" class="ml-2 text-slate-500 underline-offset-4 hover:text-accent hover:underline">Admin</a>
       </p>
@@ -111,7 +114,7 @@ import { products } from '../data/products';
         href="https://wa.me/51999999999"
         target="_blank"
         rel="noopener noreferrer"
-        class="inline-flex items-center gap-2 text-sm font-medium text-accent transition hover:text-white"
+        class="inline-flex items-center gap-2 text-sm font-medium text-accent transition hover:text-accentDark"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
