@@ -2,7 +2,7 @@ import { createHmac, timingSafeEqual } from 'node:crypto';
 import type { AstroCookies } from 'astro';
 
 const COOKIE_NAME = 'tc_session';
-const SESSION_MAX_AGE = 60 * 60 * 8; // 8 horas
+const SESSION_MAX_AGE = 60 * 60 * 24 * 30; // 30 días
 
 function getEnv(key: string): string | undefined {
   const fromImport = (import.meta.env as Record<string, string | undefined>)[key];

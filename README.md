@@ -137,7 +137,7 @@ Al confirmar hace `POST /api/pedidos` → guarda en la tabla `pedidos` de Turso 
 - `/admin/login` — formulario de usuario/contraseña.
 - `/admin` — listado de pedidos (más recientes primero), con teléfono clickeable como enlace `tel:`. Botón **Cerrar sesión** en el header.
 
-Sesión: cookie HTTP-only `tc_session` con payload `{ u, exp }` firmado con `SESSION_SECRET`. Dura 8 horas.
+Sesión: cookie HTTP-only `tc_session` con payload `{ u, exp }` firmado con `SESSION_SECRET`. Dura 30 días.
 
 ## Esquema de la tabla
 
