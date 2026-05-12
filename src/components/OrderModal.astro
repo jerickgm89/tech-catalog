@@ -191,7 +191,7 @@ const WHATSAPP_NUMBER = '51999999999';
         <button type="button" id="modal-cancel" class="btn-secondary">
           Cancelar
         </button>
-        <button type="submit" id="submit-btn" class="btn-primary">
+        <button type="submit" id="submit-btn" class="btn-primary" disabled>
           <span id="submit-label">Enviar pedido y abrir WhatsApp</span>
         </button>
       </div>
@@ -227,6 +227,30 @@ const WHATSAPP_NUMBER = '51999999999';
       total += qty * price;
     });
     if (totalEl) totalEl.textContent = formatPrice(total);
+    validateForm();
+  };
+
+  const validateForm = () => {
+    if (!(form instanceof HTMLFormElement)) return;
+
+    let hasItem = false;
+    qtyInputs()?.forEach((input) => {
+      if ((Number(input.value) || 0) > 0) hasItem = true;
+    });
+
+    const nombre = form.nombre.value.trim();
+    const telefono = form.telefono.value.trim();
+    const direccion = form.direccion.value.trim();
+
+    const valid =
+      hasItem &&
+      nombre.length > 0 &&
+      /^[0-9+\s()-]{6,20}$/.test(telefono) &&
+      direccion.length > 0;
+
+    if (submitBtn instanceof HTMLButtonElement) {
+      submitBtn.disabled = !valid;
+    }
   };
 
   const resetQuantities = () => {
@@ -312,7 +336,9 @@ const WHATSAPP_NUMBER = '51999999999';
       const v = Math.max(0, Math.min(99, Math.floor(Number(event.target.value) || 0)));
       event.target.value = String(v);
       recalcTotal();
+      return;
     }
+    validateForm();
   });
 
   closeBtn?.addEventListener('click', () => {
