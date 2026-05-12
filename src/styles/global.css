@@ -3,15 +3,46 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --color-bg: 255 255 255;
+    --color-surface: 255 255 255;
+    --color-surface-alt: 237 247 255;
+    --color-surface-blue: 214 236 255;
+    --color-border: 214 236 255;
+    --color-border-strong: 181 223 255;
+    --color-ink: 14 41 93;
+    --color-ink-soft: 13 67 155;
+    --color-muted: 100 116 139;
+
+    --bg-image:
+      radial-gradient(circle at 15% -10%, rgba(72, 176, 255, 0.18) 0%, rgba(255, 255, 255, 0) 55%),
+      radial-gradient(circle at 90% 10%, rgba(30, 142, 255, 0.10) 0%, rgba(255, 255, 255, 0) 50%);
+  }
+
+  :root.dark {
+    --color-bg: 10 15 29;
+    --color-surface: 15 23 41;
+    --color-surface-alt: 19 28 48;
+    --color-surface-blue: 26 37 64;
+    --color-border: 31 42 60;
+    --color-border-strong: 45 58 82;
+    --color-ink: 241 245 249;
+    --color-ink-soft: 203 213 225;
+    --color-muted: 148 163 184;
+
+    --bg-image:
+      radial-gradient(circle at 15% -10%, rgba(30, 142, 255, 0.20) 0%, rgba(10, 15, 29, 0) 55%),
+      radial-gradient(circle at 90% 10%, rgba(72, 176, 255, 0.10) 0%, rgba(10, 15, 29, 0) 50%);
+  }
+
   html {
     scroll-behavior: smooth;
   }
 
   body {
-    @apply bg-background text-slate-700 font-body antialiased;
-    background-image:
-      radial-gradient(circle at 15% -10%, rgba(72, 176, 255, 0.18) 0%, rgba(255, 255, 255, 0) 55%),
-      radial-gradient(circle at 90% 10%, rgba(30, 142, 255, 0.10) 0%, rgba(255, 255, 255, 0) 50%);
+    @apply bg-background font-body antialiased;
+    color: rgb(var(--color-muted));
+    background-image: var(--bg-image);
     background-attachment: fixed;
   }
 
@@ -38,30 +69,48 @@
   }
 
   .btn-primary:disabled {
-    opacity: 0.6;
+    opacity: 0.55;
     cursor: not-allowed;
     transform: none;
+    filter: grayscale(0.2);
   }
 
   .btn-secondary {
-    @apply inline-flex items-center justify-center rounded-xl border border-blueRibbon-200 bg-white px-5 py-3 font-semibold text-blueRibbon-700 transition-all duration-200;
+    @apply inline-flex items-center justify-center rounded-xl border border-borderStrong bg-surface px-5 py-3 font-semibold text-blueRibbon-700 transition-all duration-200;
   }
 
   .btn-secondary:hover {
-    @apply bg-blueRibbon-50 border-blueRibbon-300;
+    @apply bg-surfaceAlt border-blueRibbon-300;
+  }
+
+  .dark .btn-secondary {
+    @apply text-blueRibbon-400;
+  }
+
+  .dark .btn-secondary:hover {
+    @apply border-blueRibbon-500;
   }
 
   .card {
-    @apply relative overflow-hidden rounded-2xl border border-blueRibbon-100 bg-white shadow-card transition-all duration-300;
+    @apply relative overflow-hidden rounded-2xl border border-border bg-surface shadow-card transition-all duration-300;
   }
 
   .card:hover {
     transform: translateY(-6px);
-    @apply border-blueRibbon-300 shadow-cardHover;
+    @apply border-borderStrong shadow-cardHover;
   }
 
   .input-field {
-    @apply w-full rounded-xl border border-blueRibbon-200 bg-white px-4 py-3 text-ink placeholder:text-slate-400 outline-none transition-all duration-200;
+    @apply w-full rounded-xl border border-borderStrong bg-surface px-4 py-3 text-ink outline-none transition-all duration-200;
+    color-scheme: light;
+  }
+
+  .dark .input-field {
+    color-scheme: dark;
+  }
+
+  .input-field::placeholder {
+    color: rgb(var(--color-muted) / 0.7);
   }
 
   .input-field:focus {
@@ -71,8 +120,28 @@
 
   .modal-backdrop {
     @apply fixed inset-0 z-40 flex items-center justify-center p-4;
-    background: rgba(14, 41, 93, 0.4);
+    background: rgba(14, 41, 93, 0.45);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
+  }
+
+  .dark .modal-backdrop {
+    background: rgba(2, 6, 23, 0.7);
+  }
+
+  .theme-toggle-btn {
+    @apply grid h-7 w-7 place-items-center rounded-full text-muted transition-all duration-200;
+  }
+
+  .theme-toggle-btn:hover {
+    @apply text-ink;
+  }
+
+  .theme-toggle-btn[aria-pressed='true'] {
+    @apply bg-surface text-blueRibbon-700 shadow-card;
+  }
+
+  .dark .theme-toggle-btn[aria-pressed='true'] {
+    @apply text-blueRibbon-400;
   }
 }

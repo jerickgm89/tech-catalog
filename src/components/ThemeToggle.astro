@@ -1,0 +1,106 @@
+---
+---
+
+<div
+  id="theme-toggle"
+  role="radiogroup"
+  aria-label="Tema"
+  class="inline-flex items-center gap-0.5 rounded-full border border-border bg-surfaceAlt p-1"
+>
+  <button
+    type="button"
+    role="radio"
+    aria-checked="false"
+    data-theme="light"
+    class="theme-toggle-btn"
+    aria-label="Tema claro"
+    title="Claro"
+  >
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="4"></circle>
+      <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path>
+    </svg>
+  </button>
+  <button
+    type="button"
+    role="radio"
+    aria-checked="false"
+    data-theme="system"
+    class="theme-toggle-btn"
+    aria-label="Tema según el sistema"
+    title="Sistema"
+  >
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3" y="4" width="18" height="12" rx="2"></rect>
+      <path d="M8 20h8M12 16v4"></path>
+    </svg>
+  </button>
+  <button
+    type="button"
+    role="radio"
+    aria-checked="false"
+    data-theme="dark"
+    class="theme-toggle-btn"
+    aria-label="Tema oscuro"
+    title="Oscuro"
+  >
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+    </svg>
+  </button>
+</div>
+
+<script is:inline>
+  (function () {
+    const group = document.getElementById('theme-toggle');
+    if (!group) return;
+
+    const root = document.documentElement;
+    const media = window.matchMedia('(prefers-color-scheme: dark)');
+
+    const getStored = () => {
+      try {
+        return localStorage.getItem('theme') || 'system';
+      } catch {
+        return 'system';
+      }
+    };
+
+    const apply = (theme) => {
+      const isDark =
+        theme === 'dark' || (theme === 'system' && media.matches);
+      root.classList.toggle('dark', isDark);
+    };
+
+    const refreshUI = () => {
+      const current = getStored();
+      const buttons = group.querySelectorAll('button[data-theme]');
+      buttons.forEach((btn) => {
+        const matches = btn.getAttribute('data-theme') === current;
+        btn.setAttribute('aria-checked', matches ? 'true' : 'false');
+        btn.setAttribute('aria-pressed', matches ? 'true' : 'false');
+      });
+    };
+
+    refreshUI();
+    apply(getStored());
+
+    group.addEventListener('click', (event) => {
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+      const btn = target.closest('button[data-theme]');
+      if (!(btn instanceof HTMLElement)) return;
+      const theme = btn.getAttribute('data-theme');
+      if (!theme) return;
+      try {
+        localStorage.setItem('theme', theme);
+      } catch {}
+      apply(theme);
+      refreshUI();
+    });
+
+    media.addEventListener('change', () => {
+      if (getStored() === 'system') apply('system');
+    });
+  })();
+</script>

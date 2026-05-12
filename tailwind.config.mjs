@@ -1,6 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ['./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}'],
+  darkMode: 'class',
   theme: {
     extend: {
       colors: {
@@ -17,15 +18,18 @@ export default {
           900: '#0d439b',
           950: '#0e295d',
         },
-        background: '#ffffff',
-        surface: '#ffffff',
-        surfaceAlt: '#edf7ff',
-        surfaceBlue: '#d6ecff',
+        background: 'rgb(var(--color-bg) / <alpha-value>)',
+        surface: 'rgb(var(--color-surface) / <alpha-value>)',
+        surfaceAlt: 'rgb(var(--color-surface-alt) / <alpha-value>)',
+        surfaceBlue: 'rgb(var(--color-surface-blue) / <alpha-value>)',
+        border: 'rgb(var(--color-border) / <alpha-value>)',
+        borderStrong: 'rgb(var(--color-border-strong) / <alpha-value>)',
+        ink: 'rgb(var(--color-ink) / <alpha-value>)',
+        inkSoft: 'rgb(var(--color-ink-soft) / <alpha-value>)',
+        muted: 'rgb(var(--color-muted) / <alpha-value>)',
         accent: '#0671ff',
         accentDark: '#0061ff',
         accentSoft: '#83ccff',
-        ink: '#0e295d',
-        inkSoft: '#0d439b',
       },
       fontFamily: {
         display: ['Syne', 'sans-serif'],

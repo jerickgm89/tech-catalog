@@ -17,7 +17,7 @@ const { product } = Astro.props;
   data-product-id={product.id}
   data-product-name={product.name}
 >
-  <div class="relative aspect-[16/10] overflow-hidden bg-blueRibbon-50">
+  <div class="relative aspect-[16/10] overflow-hidden bg-surfaceAlt">
     <img
       src={product.image}
       alt={`${product.brand} ${product.name}`}
@@ -28,13 +28,13 @@ const { product } = Astro.props;
       ]}
     />
     <span
-      class="absolute left-3 top-3 rounded-full border border-blueRibbon-200 bg-white/95 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-blueRibbon-700 backdrop-blur"
+      class="absolute left-3 top-3 rounded-full border border-borderStrong bg-surface/95 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-blueRibbon-700 backdrop-blur dark:text-blueRibbon-400"
     >
       {product.brand}
     </span>
     {!product.disponible && (
       <span
-        class="absolute right-3 top-3 rounded-full border border-slate-300 bg-white/95 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-slate-600 backdrop-blur"
+        class="absolute right-3 top-3 rounded-full border border-borderStrong bg-surface/95 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-muted backdrop-blur"
       >
         Agotado
       </span>
@@ -44,30 +44,30 @@ const { product } = Astro.props;
   <div class="flex flex-1 flex-col gap-4 p-5">
     <header class="flex flex-col gap-1">
       <h2 class="text-xl font-bold text-ink">{product.name}</h2>
-      <p class="text-sm text-slate-500">Laptop {product.brand}</p>
+      <p class="text-sm text-muted">Laptop {product.brand}</p>
     </header>
 
-    <ul class="space-y-1.5 text-sm text-slate-600">
+    <ul class="space-y-1.5 text-sm text-inkSoft">
       <li class="flex items-center gap-2">
         <span class="inline-block h-1.5 w-1.5 rounded-full bg-accent"></span>
-        <span class="font-medium text-slate-500">RAM:</span>
+        <span class="font-medium text-muted">RAM:</span>
         <span>{product.specs.ram}</span>
       </li>
       <li class="flex items-center gap-2">
         <span class="inline-block h-1.5 w-1.5 rounded-full bg-accent"></span>
-        <span class="font-medium text-slate-500">Almacenamiento:</span>
+        <span class="font-medium text-muted">Almacenamiento:</span>
         <span>{product.specs.almacenamiento}</span>
       </li>
       <li class="flex items-center gap-2">
         <span class="inline-block h-1.5 w-1.5 rounded-full bg-accent"></span>
-        <span class="font-medium text-slate-500">Procesador:</span>
+        <span class="font-medium text-muted">Procesador:</span>
         <span>{product.specs.procesador}</span>
       </li>
     </ul>
 
     <div class="mt-auto flex items-center justify-between gap-3 pt-3">
       <div class="flex flex-col">
-        <span class="text-xs uppercase tracking-wider text-slate-500">Precio</span>
+        <span class="text-xs uppercase tracking-wider text-muted">Precio</span>
         <span class="font-display text-2xl font-bold text-ink">
           {formatPrice(product.price)}
         </span>
@@ -82,7 +82,7 @@ const { product } = Astro.props;
           Pedir ahora 🛒
         </button>
       ) : (
-        <span class="text-sm font-medium text-slate-500">
+        <span class="text-sm font-medium text-muted">
           😔 Agotado por el momento
         </span>
       )}

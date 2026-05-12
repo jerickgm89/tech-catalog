@@ -4,11 +4,12 @@ export const prerender = true;
 import Layout from '../layouts/Layout.astro';
 import ProductCard from '../components/ProductCard.astro';
 import OrderModal from '../components/OrderModal.astro';
+import ThemeToggle from '../components/ThemeToggle.astro';
 import { products } from '../data/products';
 ---
 
 <Layout>
-  <header class="sticky top-0 z-30 border-b border-blueRibbon-100 bg-white/85 backdrop-blur">
+  <header class="sticky top-0 z-30 border-b border-border bg-background/85 backdrop-blur">
     <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
       <a href="/" class="flex items-center gap-3">
         <div
@@ -31,16 +32,17 @@ import { products } from '../data/products';
         </div>
         <div class="flex flex-col leading-tight">
           <span class="font-display text-xl font-bold text-ink">TechCatalog</span>
-          <span class="text-xs text-slate-500">Laptops con entrega a todo el Perú</span>
+          <span class="text-xs text-muted">Laptops con entrega a todo el Perú</span>
         </div>
       </a>
 
-      <nav class="flex items-center gap-4 text-sm text-inkSoft sm:gap-6">
+      <nav class="flex items-center gap-3 text-sm text-inkSoft sm:gap-4">
         <a href="#productos" class="hidden transition hover:text-accent md:inline">Productos</a>
         <a href="#contacto" class="hidden transition hover:text-accent md:inline">Contacto</a>
+        <ThemeToggle />
         <a
           href="/admin"
-          class="inline-flex items-center gap-1.5 rounded-full border border-blueRibbon-200 bg-blueRibbon-50 px-3 py-1.5 font-medium text-blueRibbon-700 transition hover:bg-blueRibbon-100"
+          class="inline-flex items-center gap-1.5 rounded-full border border-borderStrong bg-surfaceAlt px-3 py-1.5 font-medium text-blueRibbon-700 transition hover:bg-surfaceBlue dark:text-blueRibbon-400"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -62,16 +64,16 @@ import { products } from '../data/products';
   </header>
 
   <main class="mx-auto max-w-7xl px-4 pb-24 pt-12 sm:px-6 lg:px-8">
-    <section class="relative mb-14 overflow-hidden rounded-3xl border border-blueRibbon-100 bg-blueRibbon-50 p-8 sm:p-12">
+    <section class="relative mb-14 overflow-hidden rounded-3xl border border-border bg-surfaceAlt p-8 sm:p-12">
       <div
         class="pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full bg-blueRibbon-300/30 blur-3xl"
       ></div>
       <div
-        class="pointer-events-none absolute -bottom-32 -left-10 h-80 w-80 rounded-full bg-blueRibbon-200/40 blur-3xl"
+        class="pointer-events-none absolute -bottom-32 -left-10 h-80 w-80 rounded-full bg-blueRibbon-200/40 blur-3xl dark:bg-blueRibbon-700/30"
       ></div>
       <div class="relative max-w-2xl">
         <p
-          class="mb-4 inline-flex items-center gap-2 rounded-full border border-blueRibbon-300 bg-white px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-blueRibbon-700"
+          class="mb-4 inline-flex items-center gap-2 rounded-full border border-borderStrong bg-surface px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-blueRibbon-700 dark:text-blueRibbon-400"
         >
           <span class="h-1.5 w-1.5 animate-pulse rounded-full bg-accent"></span>
           Stock disponible
@@ -90,7 +92,7 @@ import { products } from '../data/products';
       <div class="mb-8 flex items-end justify-between gap-4">
         <div>
           <h2 class="font-display text-3xl font-bold text-ink">Catálogo</h2>
-          <p class="mt-1 text-sm text-slate-500">
+          <p class="mt-1 text-sm text-muted">
             {products.length} laptops seleccionadas para ti
           </p>
         </div>
@@ -102,13 +104,13 @@ import { products } from '../data/products';
     </section>
   </main>
 
-  <footer id="contacto" class="border-t border-blueRibbon-100 bg-blueRibbon-50/50">
+  <footer id="contacto" class="border-t border-border bg-surfaceAlt/50">
     <div
       class="mx-auto flex max-w-7xl flex-col items-start gap-4 px-4 py-8 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8"
     >
-      <p class="text-sm text-slate-500">
+      <p class="text-sm text-muted">
         © {new Date().getFullYear()} TechCatalog. Todos los derechos reservados.
-        <a href="/admin" class="ml-2 text-slate-500 underline-offset-4 hover:text-accent hover:underline">Admin</a>
+        <a href="/admin" class="ml-2 text-muted underline-offset-4 hover:text-accent hover:underline">Admin</a>
       </p>
       <a
         href="https://wa.me/51936114196"

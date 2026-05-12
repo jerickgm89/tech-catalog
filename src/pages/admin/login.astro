@@ -1,5 +1,6 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import ThemeToggle from '../../components/ThemeToggle.astro';
 import { getSession } from '../../lib/auth';
 
 if (getSession(Astro.cookies)) {
@@ -19,12 +20,13 @@ const errorMessage =
   <main class="grid min-h-screen place-items-center px-4 py-12">
     <div class="w-full max-w-md">
       <div class="mb-6 flex items-center justify-between">
-        <a href="/" class="text-sm text-slate-500 transition hover:text-accent">
+        <a href="/" class="text-sm text-muted transition hover:text-accent">
           ← Volver al catálogo
         </a>
+        <ThemeToggle />
       </div>
 
-      <div class="overflow-hidden rounded-2xl border border-blueRibbon-100 bg-white shadow-glow">
+      <div class="overflow-hidden rounded-2xl border border-border bg-surface shadow-glow">
         <div class="bg-accent-gradient px-6 py-5 text-white">
           <p class="text-xs font-semibold uppercase tracking-[0.2em] opacity-90">
             Panel admin
@@ -65,7 +67,7 @@ const errorMessage =
           </div>
 
           {errorMessage && (
-            <div class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            <div class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900/50 dark:bg-red-950/40 dark:text-red-300">
               {errorMessage}
             </div>
           )}
@@ -76,14 +78,14 @@ const errorMessage =
         </form>
       </div>
 
-      <div class="mt-6 rounded-xl border border-blueRibbon-100 bg-blueRibbon-50/60 px-4 py-3 text-center">
-        <p class="text-xs uppercase tracking-wider text-blueRibbon-700">
+      <div class="mt-6 rounded-xl border border-border bg-surfaceAlt/60 px-4 py-3 text-center">
+        <p class="text-xs uppercase tracking-wider text-blueRibbon-700 dark:text-blueRibbon-400">
           Credenciales de demo
         </p>
         <p class="mt-1 text-sm text-inkSoft">
-          Usuario: <code class="rounded bg-white px-1.5 py-0.5 font-mono text-blueRibbon-700">admin</code>
+          Usuario: <code class="rounded bg-surface px-1.5 py-0.5 font-mono text-blueRibbon-700 dark:text-blueRibbon-400">admin</code>
           ·
-          Contraseña: <code class="rounded bg-white px-1.5 py-0.5 font-mono text-blueRibbon-700">admin</code>
+          Contraseña: <code class="rounded bg-surface px-1.5 py-0.5 font-mono text-blueRibbon-700 dark:text-blueRibbon-400">admin</code>
         </p>
       </div>
     </div>
