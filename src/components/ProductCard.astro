@@ -7,10 +7,17 @@ interface Props {
 }
 
 const { product } = Astro.props;
+const WHATSAPP_NUMBER = '51999999999';
+
+const whatsappMessage = `Hola, quiero pedir: ${product.name} ${formatPrice(product.price)}`;
+const whatsappHref = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(whatsappMessage)}`;
 ---
 
 <article
-  class="card group flex flex-col"
+  class:list={[
+    'card group flex flex-col',
+    !product.disponible && 'opacity-90',
+  ]}
   data-product-id={product.id}
   data-product-name={product.name}
 >
@@ -19,13 +26,23 @@ const { product } = Astro.props;
       src={product.image}
       alt={`${product.brand} ${product.name}`}
       loading="lazy"
-      class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+      class:list={[
+        'h-full w-full object-cover transition-transform duration-500 group-hover:scale-105',
+        !product.disponible && 'grayscale',
+      ]}
     />
     <span
       class="absolute left-3 top-3 rounded-full border border-white/10 bg-black/60 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-accent backdrop-blur"
     >
       {product.brand}
     </span>
+    {!product.disponible && (
+      <span
+        class="absolute right-3 top-3 rounded-full border border-white/15 bg-black/70 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-slate-300 backdrop-blur"
+      >
+        Agotado
+      </span>
+    )}
   </div>
 
   <div class="flex flex-1 flex-col gap-4 p-5">
@@ -59,15 +76,21 @@ const { product } = Astro.props;
           {formatPrice(product.price)}
         </span>
       </div>
-      <button
-        type="button"
-        class="btn-primary buy-button"
-        data-product-id={product.id}
-        data-product-name={product.name}
-        data-product-price={product.price}
-      >
-        Comprar ahora
-      </button>
+      {product.disponible ? (
+        <a
+          href={whatsappHref}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="btn-primary"
+          aria-label={`Pedir ${product.name} por WhatsApp`}
+        >
+          Pedir ahora 🛒
+        </a>
+      ) : (
+        <span class="text-sm font-medium text-gray-400">
+          😔 Agotado por el momento
+        </span>
+      )}
     </div>
   </div>
 </article>

@@ -1,6 +1,18 @@
 ---
-const WHATSAPP_NUMBER = '51936114196';
+import { products } from '../data/products';
+
+const productNames = products.map((p) => p.name);
 ---
+
+<button
+  type="button"
+  id="open-order-modal"
+  class="fixed bottom-6 right-6 z-30 flex items-center gap-2 rounded-full bg-accent-gradient px-5 py-4 font-display text-base font-bold text-slate-950 shadow-glowStrong transition-all duration-300 hover:scale-105 sm:bottom-8 sm:right-8 sm:text-lg"
+  aria-label="Hacer un pedido"
+>
+  <span>Hacer pedido</span>
+  <span class="text-xl">🍰</span>
+</button>
 
 <div
   id="order-modal"
@@ -16,13 +28,13 @@ const WHATSAPP_NUMBER = '51936114196';
       <div class="flex items-start justify-between gap-4">
         <div>
           <p class="text-xs font-semibold uppercase tracking-[0.2em] opacity-80">
-            Confirmar pedido
+            Nuevo pedido
           </p>
           <h3
             id="order-modal-title"
             class="font-display text-2xl font-bold leading-tight"
           >
-            <span id="order-product-name">Producto</span>
+            Cuéntanos los detalles 🍰
           </h3>
         </div>
         <button
@@ -50,56 +62,35 @@ const WHATSAPP_NUMBER = '51936114196';
     </div>
 
     <form id="order-form" class="space-y-4 px-6 py-6" novalidate>
-      <input type="hidden" name="producto" id="order-producto" />
-
-      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <div>
-          <label for="nombres" class="mb-1.5 block text-sm font-medium text-slate-300">
-            Nombres <span class="text-accent">*</span>
-          </label>
-          <input
-            type="text"
-            id="nombres"
-            name="nombres"
-            class="input-field"
-            placeholder="Ej. Juan Carlos"
-            required
-            autocomplete="given-name"
-          />
-        </div>
-        <div>
-          <label for="apellidos" class="mb-1.5 block text-sm font-medium text-slate-300">
-            Apellidos <span class="text-accent">*</span>
-          </label>
-          <input
-            type="text"
-            id="apellidos"
-            name="apellidos"
-            class="input-field"
-            placeholder="Ej. Pérez Quispe"
-            required
-            autocomplete="family-name"
-          />
-        </div>
-      </div>
-
       <div>
-        <label for="dni" class="mb-1.5 block text-sm font-medium text-slate-300">
-          DNI <span class="text-accent">*</span>
+        <label for="nombre" class="mb-1.5 block text-sm font-medium text-slate-300">
+          Nombre del cliente <span class="text-accent">*</span>
         </label>
         <input
           type="text"
-          id="dni"
-          name="dni"
-          inputmode="numeric"
-          pattern="\d{8}"
-          maxlength="8"
-          minlength="8"
+          id="nombre"
+          name="nombre"
           class="input-field"
-          placeholder="8 dígitos"
+          placeholder="Ej. Juan Pérez"
           required
+          autocomplete="name"
         />
-        <p class="mt-1 text-xs text-slate-500">Debe contener exactamente 8 dígitos numéricos.</p>
+      </div>
+
+      <div>
+        <label for="telefono" class="mb-1.5 block text-sm font-medium text-slate-300">
+          Teléfono <span class="text-accent">*</span>
+        </label>
+        <input
+          type="tel"
+          id="telefono"
+          name="telefono"
+          class="input-field"
+          placeholder="Ej. 999 999 999"
+          required
+          autocomplete="tel"
+          pattern="[0-9+\s()-]{6,20}"
+        />
       </div>
 
       <div>
@@ -115,9 +106,38 @@ const WHATSAPP_NUMBER = '51936114196';
           required></textarea>
       </div>
 
+      <div>
+        <label for="producto" class="mb-1.5 block text-sm font-medium text-slate-300">
+          ¿Qué producto quieres? <span class="text-accent">*</span>
+        </label>
+        <select id="producto" name="producto" class="input-field" required>
+          <option value="" disabled selected>Selecciona un producto…</option>
+          {productNames.map((name) => <option value={name}>{name}</option>)}
+        </select>
+      </div>
+
+      <div>
+        <label for="notas" class="mb-1.5 block text-sm font-medium text-slate-300">
+          Notas adicionales
+          <span class="text-xs font-normal text-slate-500">(opcional)</span>
+        </label>
+        <textarea
+          id="notas"
+          name="notas"
+          rows="3"
+          class="input-field resize-none"
+          placeholder='Ej. "sin azúcar", "con dedicatoria", entregar después de las 6pm…'
+        ></textarea>
+      </div>
+
       <div
         id="form-error"
         class="hidden rounded-xl border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-300"
+      ></div>
+
+      <div
+        id="form-success"
+        class="hidden rounded-xl border border-emerald-500/40 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-300"
       ></div>
 
       <div class="flex flex-col-reverse gap-2 pt-2 sm:flex-row sm:justify-end">
@@ -125,67 +145,67 @@ const WHATSAPP_NUMBER = '51936114196';
           Cancelar
         </button>
         <button type="submit" id="submit-btn" class="btn-primary">
-          <span id="submit-label">Confirmar pedido</span>
+          <span id="submit-label">Enviar pedido</span>
         </button>
       </div>
     </form>
   </div>
 </div>
 
-<script is:inline define:vars={{ WHATSAPP_NUMBER }}>
+<script is:inline>
   const modal = document.getElementById('order-modal');
+  const openBtn = document.getElementById('open-order-modal');
   const form = document.getElementById('order-form');
-  const productNameEl = document.getElementById('order-product-name');
-  const productInput = document.getElementById('order-producto');
   const errorBox = document.getElementById('form-error');
+  const successBox = document.getElementById('form-success');
   const submitBtn = document.getElementById('submit-btn');
   const submitLabel = document.getElementById('submit-label');
   const closeBtn = document.getElementById('modal-close');
   const cancelBtn = document.getElementById('modal-cancel');
 
-  const openModal = (productName) => {
-    if (!modal || !productNameEl || !productInput) return;
-    productNameEl.textContent = productName;
-    productInput.value = productName;
-    if (errorBox) {
-      errorBox.classList.add('hidden');
-      errorBox.textContent = '';
-    }
+  const openModal = () => {
+    if (!modal) return;
     modal.classList.remove('hidden');
     document.body.style.overflow = 'hidden';
-    const firstInput = form?.querySelector('input:not([type="hidden"])');
-    if (firstInput instanceof HTMLElement) {
-      setTimeout(() => firstInput.focus(), 50);
-    }
+    errorBox?.classList.add('hidden');
+    successBox?.classList.add('hidden');
+    setTimeout(() => {
+      const firstInput = form?.querySelector('input,select,textarea');
+      if (firstInput instanceof HTMLElement) firstInput.focus();
+    }, 50);
   };
 
   const closeModal = () => {
     if (!modal) return;
     modal.classList.add('hidden');
     document.body.style.overflow = '';
-    form?.reset();
   };
 
-  document.addEventListener('click', (event) => {
-    const target = event.target;
-    if (!(target instanceof Element)) return;
-    const buyButton = target.closest('.buy-button');
-    if (buyButton instanceof HTMLElement) {
-      const name = buyButton.dataset.productName;
-      if (name) openModal(name);
-    }
+  const resetForm = () => {
+    if (form instanceof HTMLFormElement) form.reset();
+  };
+
+  openBtn?.addEventListener('click', openModal);
+  closeBtn?.addEventListener('click', () => {
+    closeModal();
+    resetForm();
+  });
+  cancelBtn?.addEventListener('click', () => {
+    closeModal();
+    resetForm();
   });
 
-  closeBtn?.addEventListener('click', closeModal);
-  cancelBtn?.addEventListener('click', closeModal);
-
   modal?.addEventListener('click', (event) => {
-    if (event.target === modal) closeModal();
+    if (event.target === modal) {
+      closeModal();
+      resetForm();
+    }
   });
 
   document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape' && modal && !modal.classList.contains('hidden')) {
       closeModal();
+      resetForm();
     }
   });
 
@@ -193,44 +213,65 @@ const WHATSAPP_NUMBER = '51936114196';
     if (!errorBox) return;
     errorBox.textContent = message;
     errorBox.classList.remove('hidden');
+    successBox?.classList.add('hidden');
   };
 
-  form?.addEventListener('submit', (event) => {
+  const showSuccess = (message) => {
+    if (!successBox) return;
+    successBox.textContent = message;
+    successBox.classList.remove('hidden');
+    errorBox?.classList.add('hidden');
+  };
+
+  form?.addEventListener('submit', async (event) => {
     event.preventDefault();
     if (!(form instanceof HTMLFormElement)) return;
 
     const data = {
-      nombres: form.nombres.value.trim(),
-      apellidos: form.apellidos.value.trim(),
-      dni: form.dni.value.trim(),
+      nombre: form.nombre.value.trim(),
+      telefono: form.telefono.value.trim(),
       direccion: form.direccion.value.trim(),
       producto: form.producto.value.trim(),
+      notas: form.notas.value.trim(),
     };
 
-    if (!data.nombres || !data.apellidos || !data.dni || !data.direccion) {
-      showError('Por favor completa todos los campos.');
+    if (!data.nombre || !data.telefono || !data.direccion || !data.producto) {
+      showError('Por favor completa nombre, teléfono, dirección y producto.');
       return;
     }
 
-    if (!/^\d{8}$/.test(data.dni)) {
-      showError('El DNI debe contener exactamente 8 dígitos.');
+    if (!/^[0-9+\s()-]{6,20}$/.test(data.telefono)) {
+      showError('Ingresa un teléfono válido.');
       return;
     }
 
     errorBox?.classList.add('hidden');
+    if (submitBtn instanceof HTMLButtonElement) submitBtn.disabled = true;
+    if (submitLabel) submitLabel.textContent = 'Enviando...';
 
-    const message = [
-      '¡Hola! Quiero coordinar mi pedido:',
-      '',
-      `*Producto:* ${data.producto}`,
-      `*Nombres:* ${data.nombres}`,
-      `*Apellidos:* ${data.apellidos}`,
-      `*DNI:* ${data.dni}`,
-      `*Dirección de entrega:* ${data.direccion}`,
-    ].join('\n');
+    try {
+      const response = await fetch('/api/pedidos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
 
-    const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
-    window.open(url, '_blank', 'noopener,noreferrer');
-    closeModal();
+      const result = await response.json().catch(() => ({}));
+
+      if (!response.ok || !result?.success) {
+        throw new Error(result?.error || 'No se pudo registrar el pedido');
+      }
+
+      showSuccess(`¡Listo! Tu pedido fue registrado (N° ${result.pedidoId}).`);
+      resetForm();
+      setTimeout(() => {
+        closeModal();
+      }, 1800);
+    } catch (err) {
+      showError(err instanceof Error ? err.message : 'Ocurrió un error inesperado.');
+    } finally {
+      if (submitBtn instanceof HTMLButtonElement) submitBtn.disabled = false;
+      if (submitLabel) submitLabel.textContent = 'Enviar pedido';
+    }
   });
 </script>

@@ -1,0 +1,84 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getSession } from '../../lib/auth';
+
+if (getSession(Astro.cookies)) {
+  return Astro.redirect('/admin');
+}
+
+const errorParam = Astro.url.searchParams.get('error');
+const errorMessage =
+  errorParam === 'invalid'
+    ? 'Usuario o contraseña incorrectos.'
+    : errorParam === 'missing'
+      ? 'Ingresa usuario y contraseña.'
+      : null;
+---
+
+<Layout title="Admin · Iniciar sesión">
+  <main class="grid min-h-screen place-items-center px-4 py-12">
+    <div class="w-full max-w-md">
+      <div class="mb-6 flex items-center justify-between">
+        <a href="/" class="text-sm text-slate-400 transition hover:text-accent">
+          ← Volver al catálogo
+        </a>
+      </div>
+
+      <div class="overflow-hidden rounded-2xl border border-white/10 bg-surface shadow-glow">
+        <div class="bg-accent-gradient px-6 py-5 text-slate-950">
+          <p class="text-xs font-semibold uppercase tracking-[0.2em] opacity-80">
+            Panel admin
+          </p>
+          <h1 class="font-display text-2xl font-bold leading-tight">
+            Iniciar sesión
+          </h1>
+        </div>
+
+        <form action="/api/auth/login" method="POST" class="space-y-4 px-6 py-6">
+          <div>
+            <label for="user" class="mb-1.5 block text-sm font-medium text-slate-300">
+              Usuario
+            </label>
+            <input
+              type="text"
+              id="user"
+              name="user"
+              class="input-field"
+              required
+              autocomplete="username"
+              autofocus
+            />
+          </div>
+
+          <div>
+            <label for="password" class="mb-1.5 block text-sm font-medium text-slate-300">
+              Contraseña
+            </label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              class="input-field"
+              required
+              autocomplete="current-password"
+            />
+          </div>
+
+          {errorMessage && (
+            <div class="rounded-xl border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+              {errorMessage}
+            </div>
+          )}
+
+          <button type="submit" class="btn-primary w-full">
+            Ingresar
+          </button>
+        </form>
+      </div>
+
+      <p class="mt-6 text-center text-xs text-slate-500">
+        Acceso restringido al equipo de TechCatalog.
+      </p>
+    </div>
+  </main>
+</Layout>

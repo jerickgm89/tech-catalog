@@ -11,6 +11,7 @@ export interface Product {
   price: number;
   specs: ProductSpecs;
   image: string;
+  disponible: boolean;
 }
 
 export const products: Product[] = [
@@ -26,6 +27,7 @@ export const products: Product[] = [
     },
     image:
       'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&w=1200&q=80',
+    disponible: true,
   },
   {
     id: 2,
@@ -39,6 +41,7 @@ export const products: Product[] = [
     },
     image:
       'https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?auto=format&fit=crop&w=1200&q=80',
+    disponible: true,
   },
   {
     id: 3,
@@ -52,6 +55,7 @@ export const products: Product[] = [
     },
     image:
       'https://images.unsplash.com/photo-1593642632559-0c6d3fc62b89?auto=format&fit=crop&w=1200&q=80',
+    disponible: false,
   },
   {
     id: 4,
@@ -65,6 +69,7 @@ export const products: Product[] = [
     },
     image:
       'https://images.unsplash.com/photo-1525547719571-a2d4ac8945e2?auto=format&fit=crop&w=1200&q=80',
+    disponible: true,
   },
   {
     id: 5,
@@ -78,6 +83,7 @@ export const products: Product[] = [
     },
     image:
       'https://images.unsplash.com/photo-1531297484001-80022131f5a1?auto=format&fit=crop&w=1200&q=80',
+    disponible: true,
   },
   {
     id: 6,
@@ -91,6 +97,7 @@ export const products: Product[] = [
     },
     image:
       'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=1200&q=80',
+    disponible: false,
   },
 ];
 

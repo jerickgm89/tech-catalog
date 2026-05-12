@@ -1,65 +1,86 @@
 # TechCatalog
 
-Catálogo estático de laptops construido con **Astro + Tailwind CSS**. El formulario de pedido no usa base de datos: los datos llenados se envían directamente al **WhatsApp** del vendedor con un mensaje preformateado.
+Catálogo de laptops construido con **Astro + Tailwind CSS**. Tres flujos:
+
+1. **Pedir ahora 🛒** — botón por tarjeta que abre WhatsApp con un mensaje predefinido (`Hola, quiero pedir: [nombre] [precio]`).
+2. **Hacer pedido 🍰** — botón flotante en la home que abre un formulario completo (nombre, teléfono, dirección, producto, notas) y guarda en **Turso (libSQL)**.
+3. **/admin** — panel protegido con login (usuario + contraseña) para visualizar los pedidos.
+
+Las tarjetas marcadas como **no disponibles** ocultan el botón y muestran *“😔 Agotado por el momento”* en gris.
 
 ## Stack
 
-- Astro 4 (modo `static`)
+- Astro 4 (modo `server` con adaptador `@astrojs/vercel`)
 - Tailwind CSS 3
-- JavaScript vanilla para el modal
+- Turso / libSQL (`@libsql/client`) para persistir pedidos
+- Cookie firmada HMAC-SHA256 para la sesión del admin (sin librerías externas)
 
 ## Requisitos
 
 - Node.js 18.17+ o 20+
-- npm (o pnpm/yarn equivalente)
+- Cuenta en [Turso](https://turso.tech) (free tier OK)
+- Cuenta en [Vercel](https://vercel.com) para el deploy
 
-## Instalación
+## Configuración inicial
+
+### 1. Clonar e instalar
 
 ```bash
 cd tech-catalog
 npm install
+cp .env.example .env
 ```
 
-## Desarrollo
+### 2. Crear la base de datos en Turso
+
+```bash
+# Instala el CLI una sola vez
+brew install tursodatabase/tap/turso     # macOS
+# o: curl -sSfL https://get.tur.so/install.sh | bash
+
+turso auth signup     # o `turso auth login` si ya tienes cuenta
+turso db create tech-catalog
+turso db show tech-catalog --url        # copia esta URL
+turso db tokens create tech-catalog      # copia este token
+```
+
+Pega ambos valores en `.env`:
+
+```env
+TURSO_DATABASE_URL=libsql://tech-catalog-xxxxx.turso.io
+TURSO_AUTH_TOKEN=eyJhbGciOi...
+```
+
+> La tabla `pedidos` se crea automáticamente la primera vez que un cliente envía el formulario.
+
+### 3. Configurar el admin
+
+En `.env`:
+
+```env
+ADMIN_USER=admin
+ADMIN_PASSWORD=la-clave-que-quieras
+SESSION_SECRET=$(openssl rand -base64 48)   # pega el resultado aquí
+```
+
+### 4. Desarrollo
 
 ```bash
 npm run dev
 ```
 
-Abre [http://localhost:4321](http://localhost:4321).
-
-## Build local
-
-```bash
-npm run build
-npm run preview
-```
-
-El build genera `dist/` con HTML/CSS/JS puro, listo para cualquier CDN.
+- Catálogo: [http://localhost:4321](http://localhost:4321)
+- Admin: [http://localhost:4321/admin](http://localhost:4321/admin)
 
 ## Despliegue en Vercel
 
-Vercel autodetecta proyectos Astro estáticos. Tienes dos rutas:
+1. Sube el repo a GitHub.
+2. En [vercel.com/new](https://vercel.com/new) importa el repositorio.
+3. Vercel autodetecta Astro. **No modifiques** los comandos.
+4. En **Environment Variables** añade las mismas cuatro variables (`TURSO_DATABASE_URL`, `TURSO_AUTH_TOKEN`, `ADMIN_USER`, `ADMIN_PASSWORD`, `SESSION_SECRET`).
+5. Click **Deploy**.
 
-### Opción A — Desde la web (recomendada)
-
-1. Sube el repo a GitHub/GitLab/Bitbucket.
-2. En [vercel.com/new](https://vercel.com/new), importa el repositorio.
-3. Vercel detecta Astro automáticamente:
-   - **Framework Preset:** Astro
-   - **Build Command:** `npm run build`
-   - **Output Directory:** `dist`
-4. Pulsa **Deploy**.
-
-### Opción B — Desde la terminal
-
-```bash
-npm i -g vercel
-vercel        # primera vez: te guía para enlazar el proyecto
-vercel --prod # despliegue a producción
-```
-
-No hay variables de entorno que configurar.
+Cualquier push a `main` redeplega automáticamente.
 
 ## Estructura
 
@@ -67,37 +88,73 @@ No hay variables de entorno que configurar.
 tech-catalog/
 ├── src/
 │   ├── components/
-│   │   ├── OrderModal.astro     # Modal + envío a WhatsApp
-│   │   └── ProductCard.astro    # Tarjeta de producto
-│   ├── data/
-│   │   └── products.ts          # Catálogo hardcoded (6 laptops)
-│   ├── layouts/
-│   │   └── Layout.astro
+│   │   ├── OrderModal.astro       # Botón flotante 🍰 + form completo (RETO 3)
+│   │   └── ProductCard.astro      # Tarjeta + botón 🛒 / texto Agotado (RETO 1+2)
+│   ├── data/products.ts           # Catálogo hardcoded con campo `disponible`
+│   ├── layouts/Layout.astro
+│   ├── lib/
+│   │   ├── auth.ts                # HMAC, cookie firmada, checkCredentials
+│   │   └── db.ts                  # Cliente Turso + helpers para `pedidos`
 │   ├── pages/
-│   │   └── index.astro
+│   │   ├── index.astro            # Home (prerender)
+│   │   ├── admin/
+│   │   │   ├── index.astro        # Listado de pedidos (protegido)
+│   │   │   └── login.astro
+│   │   └── api/
+│   │       ├── pedidos.ts         # POST → guarda en Turso
+│   │       └── auth/
+│   │           ├── login.ts
+│   │           └── logout.ts
 │   └── styles/global.css
-├── astro.config.mjs
+├── astro.config.mjs               # output: 'server' + adapter Vercel
 ├── tailwind.config.mjs
 └── package.json
 ```
 
-## Flujo de pedido
+## Flujos
 
-1. Usuario pulsa **Comprar ahora** en una tarjeta.
-2. Se abre el modal con el nombre del producto en el encabezado.
-3. Al confirmar, el frontend valida (DNI de 8 dígitos, campos obligatorios) y construye el mensaje de WhatsApp.
-4. Se abre `https://wa.me/51936114196?text=...` en una nueva pestaña con todos los datos del formulario precargados:
+### RETO 1 — Pedir ahora 🛒
+Click en el botón → abre `https://wa.me/51999999999?text=Hola,%20quiero%20pedir:%20<producto>%20<precio>` en nueva pestaña.
 
+### RETO 2 — Visibilidad
+Cuando `product.disponible === false`, la tarjeta:
+- aplica `grayscale` a la imagen,
+- añade un badge **“Agotado”** sobre la imagen,
+- reemplaza el botón por el texto **“😔 Agotado por el momento”** en gris (`text-gray-400`).
+
+### RETO 3 — Hacer pedido 🍰
+Botón flotante (esquina inferior derecha) → abre modal con:
+- Nombre del cliente
+- Teléfono
+- Dirección de entrega
+- Producto (selector con los 6 ítems del catálogo)
+- Notas (opcional — “sin azúcar”, “con dedicatoria”, etc.)
+
+Al confirmar hace `POST /api/pedidos` → guarda en la tabla `pedidos` de Turso → muestra mensaje de éxito con el ID.
+
+### Admin
+
+- `/admin/login` — formulario de usuario/contraseña.
+- `/admin` — listado de pedidos (más recientes primero), con teléfono clickeable como enlace `tel:`. Botón **Cerrar sesión** en el header.
+
+Sesión: cookie HTTP-only `tc_session` con payload `{ u, exp }` firmado con `SESSION_SECRET`. Dura 8 horas.
+
+## Esquema de la tabla
+
+```sql
+CREATE TABLE pedidos (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  nombre TEXT NOT NULL,
+  telefono TEXT NOT NULL,
+  direccion TEXT NOT NULL,
+  producto TEXT NOT NULL,
+  notas TEXT,
+  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
 ```
-¡Hola! Quiero coordinar mi pedido:
 
-*Producto:* MacBook Air M2
-*Nombres:* Juan Carlos
-*Apellidos:* Pérez Quispe
-*DNI:* 12345678
-*Dirección de entrega:* Av. Principal 123, Lima
-```
+## Notas
 
-## Cambiar el número de WhatsApp
-
-Edita la constante `WHATSAPP_NUMBER` en `src/components/OrderModal.astro` (frontmatter) y el `href` del footer en `src/pages/index.astro`.
+- Si cambias `SESSION_SECRET` en producción, todas las sesiones activas se invalidan.
+- Para revisar los pedidos desde la terminal: `turso db shell tech-catalog "SELECT * FROM pedidos;"`.
+- Para cambiar el número de WhatsApp edita `WHATSAPP_NUMBER` en `src/components/ProductCard.astro`.
